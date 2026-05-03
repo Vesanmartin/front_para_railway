@@ -1,0 +1,80 @@
+.inventario-container {
+  padding: 30px;
+  background: #eef2f7;
+  min-height: 100vh;
+}
+
+/* KPIs */
+.inventario-kpis {
+  display: flex;
+  gap: 30px;
+  justify-content: center;
+  margin: 30px 0;
+  flex-wrap: wrap;
+}
+
+.card-kpi {
+  background: linear-gradient(135deg, #16a085, #27ae60);
+  color: white;
+  padding: 25px;
+  border-radius: 12px;
+  width: 220px;
+  text-align: center;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+}
+
+/* Buscador */
+.buscador {
+  padding: 12px;
+  width: 300px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+  margin-bottom: 20px;
+}
+
+/* Form */
+.form-admin {
+  background: white;
+  padding: 20px;
+  margin-bottom: 20px;
+  border-radius: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.form-admin input {
+  padding: 8px;
+}
+
+.form-admin button {
+  background: #27ae60;
+  color: white;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+}
+
+/* Tabla */
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.tabla th {
+  background: #2c3e50;
+  color: white;
+  padding: 12px;
+}
+
+.tabla td {
+  padding: 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.tabla tr:hover {
+  background: #f1f1f1;
+}
