@@ -1,27 +1,25 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+// src/App.jsx
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
-import Ventas from "./pages/Ventas";
-import Inventario from "./pages/Inventario";
-import Clientes from "./pages/Clientes";
-import Sidebar from "./components/Sidebar";
+import Gestion from "./pages/Gestion";
+import Importacion from "./pages/Importacion";
 
 function App() {
   return (
     <BrowserRouter>
-      <div style={{ display: "flex" }}>
+      <Routes>
+        {/* Ruta raíz redirige al login */}
+        <Route path="/" element={<Navigate to="/login" />} />
         
-        <Sidebar />
-
-        <div style={{ flex: 1 }}>
-          <Routes>
-            <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/ventas" element={<Ventas />} />
-            <Route path="/inventario" element={<Inventario />} />
-            <Route path="/clientes" element={<Clientes />} />
-          </Routes>
-        </div>
-
-      </div>
+        {/* Login sin Navbar */}
+        <Route path="/login" element={<Login />} />
+        
+        {/* Rutas protegidas */}
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/gestion" element={<Gestion />} />
+        <Route path="/importacion" element={<Importacion />} />
+      </Routes>
     </BrowserRouter>
   );
 }

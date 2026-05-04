@@ -1,40 +1,79 @@
-import { useNavigate } from "react-router-dom";
+// src/pages/Dashboard.jsx
+import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
-import KpiCard from "../components/KpiCard";
-import { obtenerKPIs } from "../services/api";
+
+// Decodifica el token JWT sin librería externa
+function decodificarToken(token) {
+  try {
+    const payload = token.split(".")[1];
+    return JSON.parse(atob(payload));
+  } catch {
+    return null;
+  }
+}
 
 function Dashboard() {
+  const [usuario, setUsuario] = useState(null);
 
-  const data = obtenerKPIs();
-  const navigate = useNavigate();
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      const datos = decodificarToken(token);
+      setUsuario(datos);
+    }
+  }, []);
+
+  const rol = usuario?.rol || "gerente";
 
   return (
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
-      
       <Navbar />
+      <div style={{ padding: "40px" }}>
+        <h1 style={{ marginBottom: "10px" }}>Dashboard</h1>
+        <p style={{ color: "#666", marginBottom: "30px" }}>
+          Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} — Rol: <strong>{rol}</strong>
+        </p>
 
-      <div style={{
-        padding: "40px",
-        display: "flex",
-        gap: "30px",
-        justifyContent: "center",
-        flexWrap: "wrap"
-      }}>
+        {/* Vista Gerente y Admin */}
+        {(rol === "gerente" || rol === "admin") && (
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            <Tarjeta titulo="Indicadores Cordillera" color="#0077b6" />
+            <Tarjeta titulo="Informes Cordillera" color="#00b4d8" />
+            <Tarjeta titulo="Chatbot Cordillera" color="#48cae4" />
+          </div>
+        )}
 
-        <div onClick={() => navigate("/ventas")}>
-          <KpiCard titulo="Ventas" valor={data.ventas} />
-        </div>
+        {/* Vista Admin */}
+        {rol === "admin" && (
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap", marginTop: "20px" }}>
+            <Tarjeta titulo="Gestión" descripcion="Administrar usuarios y proyectos" color="#023e8a" />
+            <Tarjeta titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" />
+          </div>
+        )}
 
-        <div onClick={() => navigate("/inventario")}>
-          <KpiCard titulo="Inventario" valor={data.inventario} />
-        </div>
-
-        <div onClick={() => navigate("/clientes")}>
-          <KpiCard titulo="Clientes" valor={data.clientes} />
-        </div>
-
+        {/* Vista Operador */}
+        {rol === "operador" && (
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            <Tarjeta titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" />
+          </div>
+        )}
       </div>
+    </div>
+  );
+}
 
+function Tarjeta({ titulo, descripcion, color }) {
+  return (
+    <div style={{
+      background: "white",
+      borderRadius: "12px",
+      padding: "30px",
+      width: "200px",
+      boxShadow: "0 2px 8px rgba(0,0,0,0.1)",
+      borderTop: `4px solid ${color}`
+    }}>
+      <h3 style={{ color, marginBottom: "8px" }}>{titulo}</h3>
+      <p style={{ color: "#666", fontSize: "14px" }}>{descripcion}</p>
     </div>
   );
 }

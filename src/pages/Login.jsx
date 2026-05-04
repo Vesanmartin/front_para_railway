@@ -1,43 +1,47 @@
+// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../services/api";
 import "../styles/login.css";
 import logo from "../assets/logo.png";
 
 function Login() {
-  const [usuario, setUsuario] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
-  const handleLogin = (e) => {
-    e.preventDefault();
-
-    if (usuario === "admin" && password === "1234") {
+  const handleLogin = async (e) => {
+    if (e) e.preventDefault();
+    console.log("handleLogin ejecutado", email, password);
+    setError("");
+    try {
+      const data = await login(email, password);
+      localStorage.setItem("token", data.token);
       navigate("/dashboard");
-    } else {
-      alert("Credenciales incorrectas");
+    } catch (err) {
+      setError("Credenciales incorrectas");
     }
   };
 
   return (
     <div className="login-container">
-
-      {/* TEXTO BIENVENIDA */}
       <h1 style={{ color: "white", marginBottom: "20px" }}>
         Bienvenidos a Grupo Cordillera
       </h1>
 
       <form onSubmit={handleLogin} className="login-box">
-        
         <img src={logo} alt="Logo Cordillera" className="logo" />
-
         <h2>Ingreso Sistema</h2>
 
+        {error && <p style={{ color: "red" }}>{error}</p>}
+
         <input
-          type="text"
-          placeholder="Usuario"
+          type="email"
+          placeholder="Email"
           className="input"
-          value={usuario}
-          onChange={(e) => setUsuario(e.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
         />
 
         <input
@@ -48,14 +52,18 @@ function Login() {
           onChange={(e) => setPassword(e.target.value)}
         />
 
-        <button className="button">Ingresar</button>
+        <button 
+          type="button"
+          className="button"
+          onClick={handleLogin}
+      >
+      Ingresar
+</button>
       </form>
 
-      {/* Footer */}
       <div className="footer">
-        Grupo Cordillera © 2026 | Tel: +56 9 1234 5678 | Fundada 2010
+        Grupo Cordillera © 2026 | Cocq-Gallegos-San Martin- Vasquez
       </div>
-
     </div>
   );
 }
