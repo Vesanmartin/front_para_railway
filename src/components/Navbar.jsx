@@ -1,8 +1,20 @@
 // src/components/Navbar.jsx
 import { useNavigate } from "react-router-dom";
 
+function obtenerRol() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return null;
+    const payload = JSON.parse(atob(token.split(".")[1]));
+    return payload.rol;
+  } catch {
+    return null;
+  }
+}
+
 function Navbar() {
   const navigate = useNavigate();
+  const rol = obtenerRol();
 
   const cerrarSesion = () => {
     localStorage.removeItem("token");
@@ -23,22 +35,52 @@ function Navbar() {
       </span>
 
       <div style={{ display: "flex", gap: "20px" }}>
-        <button onClick={() => navigate("/dashboard")}
-          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-          Dashboard
-        </button>
-        <button onClick={() => navigate("/gestion")}
-          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-          Gestión
-        </button>
-        <button onClick={() => navigate("/importacion")}
-          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-          Importación
-        </button>
+
+        {/* ADMIN — solo ve Admin en celeste */}
+        {rol === "admin" && (
+          <button onClick={() => navigate("/admin")}
+            style={{ background: "transparent", color: "#48cae4", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "600" }}>
+            Admin
+          </button>
+        )}
+
+        {/* GERENTE — ve Dashboard, KPI y Chatbot */}
+        {rol === "gerente" && (
+        <>
+          <button onClick={() => navigate("/dashboard")}
+            style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            Dashboard
+          </button>
+          <button onClick={() => navigate("/kpi")}
+            style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            KPI
+          </button>
+          <button onClick={() => navigate("/chatbot")}
+            style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            Chatbot
+          </button>
+        </>
+)}
+
+        {/* OPERADOR — ve Gestión e Importación */}
+        {rol === "operador" && (
+          <>
+            <button onClick={() => navigate("/gestion")}
+              style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+              Gestión
+            </button>
+            <button onClick={() => navigate("/importacion")}
+              style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+              Importación
+            </button>
+          </>
+        )}
+
         <button onClick={cerrarSesion}
           style={{ background: "#e74c3c", color: "white", border: "none", cursor: "pointer", fontSize: "16px", padding: "6px 14px", borderRadius: "8px" }}>
           Cerrar Sesión
         </button>
+
       </div>
     </nav>
   );

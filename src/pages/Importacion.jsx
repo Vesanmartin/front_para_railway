@@ -23,7 +23,8 @@ function Importacion() {
   const [cargando, setCargando]     = useState(false);
   const [progreso, setProgreso]     = useState(0);
   const [mensaje, setMensaje]       = useState({ texto: "", tipo: "" });
-  const [modoImport, setModoImport] = useState("csv"); // "csv" o "auto"
+  const [modoImport, setModoImport] = useState("csv"); // "csv" o "auto";
+  const [frecuencia, setFrecuencia] = useState("diaria"); // para tener frecuencia de descargar datos + boton que llame serverless
 
   const token = localStorage.getItem("token");
 
@@ -98,35 +99,44 @@ function Importacion() {
   };
 
   const importarAuto = async () => {
-    const moduloData = MODULOS.find(m => m.id === modulo);
-    const fuente = moduloData?.fuente || "ERP";
+  const moduloData = MODULOS.find(m => m.id === modulo);
+  const fuente = moduloData?.fuente || "ERP";
 
-    setCargando(true);
-    setMensaje({ texto: "", tipo: "" });
+  setCargando(true);
+  setMensaje({ texto: "", tipo: "" });
 
-    try {
-      const respuesta = await fetch("http://localhost:3003/api/import/datos", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ sourceType: fuente, sucursal: "Todas" })
+  try {
+    // Llama al endpoint Serverless local (puerto 4000/dev)
+    const respuesta = await fetch("http://localhost:4000/dev/importar-automatico", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${token}`
+      },
+      body: JSON.stringify({
+        fuente: fuente,
+        modulo: modulo,
+        frecuencia: frecuencia,
+        sucursal: "Todas"
+      })
+    });
+
+    const data = await respuesta.json();
+    if (data.success) {
+      setMensaje({
+        texto: `Importacion automatica ${frecuencia} programada para ${fuente}`,
+        tipo: "exito"
       });
-
-      const data = await respuesta.json();
-      if (data.success) {
-        setMensaje({ texto: `Importación automática desde ${fuente} completada`, tipo: "exito" });
-        await cargarHistorial();
-      } else {
-        setMensaje({ texto: `${data.error}`, tipo: "error" });
-      }
-    } catch (err) {
-      setMensaje({ texto: "Error en importación automática", tipo: "error" });
-    } finally {
-      setCargando(false);
+      await cargarHistorial();
+    } else {
+      setMensaje({ texto: data.error || "Error en importacion automatica", tipo: "error" });
     }
-  };
+  } catch (err) {
+    setMensaje({ texto: "Error conectando con el servicio Serverless", tipo: "error" });
+  } finally {
+    setCargando(false);
+  }
+};
 
   const badgeEstado = (estado) => ({
     padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "bold",
@@ -217,13 +227,29 @@ function Importacion() {
 
           {/* Modo automático */}
           {modoImport === "auto" && (
-            <div style={{ background: "#f8fafc", borderRadius: "8px", padding: "16px", marginBottom: "16px" }}>
-              <p style={{ color: "#555", fontSize: "14px", margin: 0 }}>
-                Importación automática simulada — conecta directamente con el sistema externo
-                usando el <strong>ConnectorFactory</strong>.
-              </p>
-            </div>
-          )}
+  <div style={{ background: "#f8fafc", borderRadius: "8px", padding: "20px", marginBottom: "16px" }}>
+    <p style={{ color: "#555", fontSize: "14px", marginBottom: "16px" }}>
+      Selecciona el modulo y la frecuencia, luego presiona <strong>Importar Automatico</strong> para programar la importacion.
+    </p>
+    <p style={{ color: "#555", fontWeight: "500", marginBottom: "8px" }}>Frecuencia:</p>
+    <div style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
+      {["diaria", "semanal", "mensual"].map(f => (
+        <button key={f} onClick={() => setFrecuencia(f)}
+          style={{
+            padding: "8px 20px", borderRadius: "8px", border: "none", cursor: "pointer",
+            background: frecuencia === f ? "#7c3aed" : "#e2e8f0",
+            color: frecuencia === f ? "white" : "#555",
+            fontWeight: "600", textTransform: "capitalize"
+          }}>
+          {f}
+        </button>
+      ))}
+    </div>
+    <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>
+      Modulo seleccionado: <strong>{MODULOS.find(m => m.id === modulo)?.nombre}</strong> — frecuencia: <strong>{frecuencia}</strong>
+    </p>
+  </div>
+)}
 
           {/* Barra progreso */}
           {progreso > 0 && (
