@@ -2,6 +2,8 @@
 // Chatbot powered by Ollama llama3.2 via informes-service (puerto 3004)
 // Patrón Circuit Breaker — el informes-service maneja fallos de Ollama
 
+// src/pages/Chatbot.jsx
+import gatoImg from "../assets/gatomeme.png";
 import { useState, useEffect, useRef } from "react";
 import Navbar from "../components/Navbar";
 
@@ -13,21 +15,16 @@ function Chatbot() {
   const [cargando, setCargando] = useState(false);
   const finRef = useRef(null);
 
-  // Scroll automático al último mensaje
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [mensajes]);
 
   const enviar = async () => {
     if (!pregunta.trim() || cargando) return;
-
     const textoPregunta = pregunta.trim();
     setPregunta("");
-
-    // Agrega mensaje del usuario
     setMensajes(prev => [...prev, { rol: "usuario", texto: textoPregunta }]);
     setCargando(true);
-
     try {
       const respuesta = await fetch("http://localhost:3004/api/informes/chat", {
         method: "POST",
@@ -35,7 +32,6 @@ function Chatbot() {
         body: JSON.stringify({ pregunta: textoPregunta })
       });
       const data = await respuesta.json();
-
       if (data.success) {
         setMensajes(prev => [...prev, { rol: "asistente", texto: data.respuesta }]);
       } else {
@@ -48,7 +44,6 @@ function Chatbot() {
     }
   };
 
-  // Enviar con Enter
   const manejarTecla = (e) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
@@ -83,7 +78,6 @@ function Chatbot() {
           Asistente inteligente powered by <strong>Ollama llama3.2</strong> via Circuit Breaker
         </p>
 
-        {/* Ventana de chat */}
         <div style={{
           background: "#f8fafc", borderRadius: "12px", padding: "20px",
           height: "450px", overflowY: "auto", display: "flex",
@@ -94,24 +88,30 @@ function Chatbot() {
             <div key={i} style={estiloMensaje(m.rol)}>
               {m.rol !== "usuario" && (
                 <div style={{ fontSize: "11px", color: m.rol === "error" ? "#991b1b" : "#0077b6", marginBottom: "4px", fontWeight: "600" }}>
-                  {m.rol === "asistente" ? "🤖 Asistente" : m.rol === "sistema" ? "ℹ️ Sistema" : "⚠️ Error"}
+                  {m.rol === "asistente" ? (
+                    <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <img src={gatoImg} style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" }} alt="asistente" />
+                      Asistente
+                    </span>
+                  ) : m.rol === "sistema" ? "ℹ️ Sistema" : "⚠️ Error"}
                 </div>
               )}
               <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.5" }}>{m.texto}</div>
             </div>
           ))}
 
-          {/* Indicador de escritura */}
           {cargando && (
             <div style={{ alignSelf: "flex-start", background: "white", padding: "10px 16px", borderRadius: "18px 18px 18px 4px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-              <div style={{ fontSize: "11px", color: "#0077b6", marginBottom: "4px", fontWeight: "600" }}>🤖 Asistente</div>
+              <div style={{ fontSize: "11px", color: "#0077b6", marginBottom: "4px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}>
+                <img src={gatoImg} style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }} alt="asistente" />
+                Asistente
+              </div>
               <div style={{ color: "#94a3b8", fontSize: "14px" }}>Pensando...</div>
             </div>
           )}
           <div ref={finRef} />
         </div>
 
-        {/* Input */}
         <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
           <input
             value={pregunta}
