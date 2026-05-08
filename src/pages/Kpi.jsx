@@ -130,7 +130,7 @@ function Kpi() {
                 <tr key={i} style={{ borderTop: "1px solid #f1f5f9" }}>
                   <td style={{ padding: "12px", fontWeight: "600" }}>{c.categoria}</td>
                   <td style={{ padding: "12px", color: "#666" }}>{parseInt(c.cantidad).toLocaleString()}</td>
-                  <td style={{ padding: "12px", color: "#0077b6", fontWeight: "600" }}>${parseFloat(c.total).toLocaleString()}</td>
+                  <td style={{ padding: "12px", color: "#0077b6", fontWeight: "600" }}>${parseInt(c.total).toLocaleString()}</td>
                 </tr>
               ))}
             </tbody>

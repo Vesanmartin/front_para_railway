@@ -34,7 +34,7 @@ function Importacion() {
 
   const cargarHistorial = async () => {
     try {
-      const respuesta = await fetch("http://localhost:3003/api/import/historial", {
+      const respuesta = await fetch("http://localhost:3006/api/import/historial", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await respuesta.json();
@@ -65,7 +65,7 @@ function Importacion() {
       formData.append("modulo", modulo);
       formData.append("fuente", moduloData?.fuente || "ERP");
 
-      const respuesta = await fetch("http://localhost:3003/api/import/csv", {
+      const respuesta = await fetch("http://localhost:3006/api/import/csv", {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: formData
