@@ -44,6 +44,36 @@ function Navbar() {
           </button>
         )}
 
+        {/* SUPERSAYAYIN — ve todos los módulos */}
+        {rol === "supersayayin" && (
+        <>
+          <button onClick={() => navigate("/admin")}
+            style={{ background: "transparent", color: "#48cae4", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "600" }}>
+            Admin
+         </button>
+          <button onClick={() => navigate("/dashboard")}
+            style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            Dashboard
+        </button>
+          <button onClick={() => navigate("/kpi")}
+          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+           KPI
+          </button>
+          <button onClick={() => navigate("/chatbot")}
+            style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+          Chatbot
+          </button>
+            <button onClick={() => navigate("/gestion")}
+          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            Gestión
+          </button>
+          <button onClick={() => navigate("/importacion")}
+      style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+            Importación
+          </button>
+        </>
+          )}
+
         {/* GERENTE — ve Dashboard, KPI y Chatbot */}
         {rol === "gerente" && (
         <>

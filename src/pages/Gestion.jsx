@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 function Gestion() {
   const [pestana, setPestana] = useState("usuarios");
   const [sucursales, setSucursales] = useState([]);
+  const [usuarios, setUsuarios] = useState([]);
   const [nueva, setNueva] = useState({ nombre: "", descripcion: "", direccion: "", region: "" });
 
   // Estados para el módulo Serverless 
@@ -41,9 +42,7 @@ function Gestion() {
   useEffect(() => {
     const cargar = async () => {
       try {
-        const respuesta = await fetch("http://localhost:3003/api/gestion/gestion", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
+        const respuesta = await fetch("http://localhost:3003/api/sucursales");
         const data = await respuesta.json();
         if (Array.isArray(data)) setSucursales(data);
       } catch (err) {
@@ -52,6 +51,24 @@ function Gestion() {
     };
     cargar();
   }, []);
+
+  // Carga usuarios reales desde el auth-service
+useEffect(() => {
+  const cargarUsuarios = async () => {
+    try {
+      const respuesta = await fetch("http://localhost:3001/api/auth/users", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      const data = await respuesta.json();
+      if (Array.isArray(data)) setUsuarios(data);
+    } catch (err) {
+      console.error("Error cargando usuarios:", err);
+    }
+  };
+  cargarUsuarios();
+}, []);
+
+
 
   const crearSucursal = async () => {
     try {
@@ -77,6 +94,21 @@ function Gestion() {
       console.error("Error eliminando:", err);
     }
   };
+
+  // Elimina un usuario llamando al auth-service
+// Elimina un usuario llamando al auth-service
+const eliminarUsuario = async (id) => {
+  try {
+    await fetch(`http://localhost:3001/api/auth/usuarios/${id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    // Actualiza la lista removiendo el usuario eliminado
+    setUsuarios(usuarios.filter(u => u.id !== id));
+  } catch (err) {
+    console.error("Error eliminando usuario:", err);
+  }
+};
 
   // FUNCIÓN LAMBDA 1: Reporte bajo demanda
   // Concepto Serverless: esta función NO corre en un servidor permanente.
@@ -187,27 +219,33 @@ function Gestion() {
             {pestana === "usuarios" && (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
-                  <tr style={{ background: "#f8fafc" }}>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Email</th>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Rol</th>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Sucursal</th>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Última conexión</th>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Estado</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {usuariosConectados.map(u => (
-                    <tr key={u.id} style={{ borderTop: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px" }}>{u.email}</td>
-                      <td style={{ padding: "12px" }}><span style={badgeRol(u.rol)}>{u.rol}</span></td>
-                      <td style={{ padding: "12px" }}>{u.sucursal}</td>
-                      <td style={{ padding: "12px", color: "#666" }}>{u.conexion}</td>
-                      <td style={{ padding: "12px" }}><span style={badgeEstado(u.estado)}>{u.estado}</span></td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
+          <tr style={{ background: "#f8fafc" }}>
+              <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Email</th>
+              <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Rol</th>
+              <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Estado</th>
+              <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Acciones</th>
+             </tr>
+            </thead>
+        <tbody>
+          {usuarios.length === 0 && (
+              <tr><td colSpan="4" style={{ padding: "20px", textAlign: "center", color: "#999" }}>No hay usuarios</td></tr>
+          )}
+        {usuarios.map(u => (
+          <tr key={u.id} style={{ borderTop: "1px solid #f1f5f9" }}>
+            <td style={{ padding: "12px" }}>{u.email}</td>
+              <td style={{ padding: "12px" }}><span style={badgeRol(u.rol)}>{u.rol}</span></td>
+              <td style={{ padding: "12px" }}><span style={badgeEstado(u.estado || "activo")}>{u.estado || "activo"}</span></td>
+              <td style={{ padding: "12px" }}>
+                <button onClick={() => eliminarUsuario(u.id)}
+                    style={{ padding: "5px 12px", background: "#fee2e2", color: "#991b1b", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                  Eliminar
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+         </table>
+                )}
 
             {/* PESTAÑA ARCHIVOS */}
             {pestana === "archivos" && (
