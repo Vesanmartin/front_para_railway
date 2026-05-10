@@ -7,6 +7,7 @@ import Importacion from "./pages/Importacion";
 import Admin from "./pages/Admin";
 import Kpi from "./pages/Kpi";
 import Chatbot from "./pages/Chatbot";
+import Informes from "./pages/Informes";
 
 // Componente de rutas
 // Verifica que el usuario tenga el rol requerido para acceder.
@@ -51,6 +52,7 @@ function App() {
           </RutaProtegida>
         } />
         <Route path="/chatbot" element={<RutaProtegida><Chatbot /></RutaProtegida>} />
+        <Route path="/informes" element={<RutaProtegida><Informes /></RutaProtegida>} />
         
       </Routes>
     </BrowserRouter>

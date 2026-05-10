@@ -68,10 +68,14 @@ function Navbar() {
             Gestión
           </button>
           <button onClick={() => navigate("/importacion")}
-      style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
             Importación
-          </button>
-        </>
+          </button>           
+          <button onClick={() => navigate("/informes")}
+          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+          Informes
+        </button>
+          </>
           )}
 
         {/* GERENTE — ve Dashboard, KPI y Chatbot */}
@@ -89,8 +93,12 @@ function Navbar() {
             style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
             Chatbot
           </button>
-        </>
-)}
+          <button onClick={() => navigate("/informes")}
+          style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
+          Informes
+          </button>
+           </>
+          )}
 
         {/* OPERADOR — ve Gestión e Importación */}
         {rol === "operador" && (
