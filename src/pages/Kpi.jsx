@@ -54,7 +54,7 @@ function Kpi() {
       <div style={{ padding: "40px" }}>
         <h1 style={{ marginBottom: "5px" }}>Indicadores KPI</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
-          Datos reales calculados desde transacciones ERP via Factory Method
+          Datos reales de los dos últimos meses (cargados en sistema) vía Factory Method
         </p>
 
         {/* Tarjetas resumen */}
@@ -65,7 +65,7 @@ function Kpi() {
             color="#0077b6"
           />
           <TarjetaKPI
-            titulo="Ingreso Total"
+            titulo="Volumen total operaciones"
             valor={`$${parseInt(datos?.ventas?.ingresoTotal).toLocaleString()}`}
             color="#00b4d8"
           />
