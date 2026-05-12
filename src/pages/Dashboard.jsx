@@ -52,7 +52,7 @@ function Dashboard() {
           Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} — Rol: <strong>{rol}</strong>
         </p>
 
-        {/* Tarjetas métricas — visibles para todos los roles */}
+        {/* Tarjetas métricas */}
         {resumen && (
           <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
             <Tarjeta titulo="Usuarios del Sistema" valor={resumen.totalUsuarios} color="#0077b6" />
@@ -128,6 +128,19 @@ function Dashboard() {
             <TarjetaAcceso titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" url="/importacion" />
           </div>
         )}
+
+        {/* Vista SuperSaiyajin — acceso total */}
+        {rol === "supersaiyajin" && (
+          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
+            <TarjetaAcceso titulo="Panel Admin" descripcion="Gestión de usuarios y roles" color="#023e8a" url="/admin" />
+            <TarjetaAcceso titulo="Indicadores KPI" descripcion="Ver métricas operacionales" color="#0077b6" url="/kpi" />
+            <TarjetaAcceso titulo="Informes" descripcion="Análisis de ventas por período" color="#00b4d8" url="/informes" />
+            <TarjetaAcceso titulo="Chatbot" descripcion="Consulta inteligente de datos" color="#48cae4" url="/chatbot" />
+            <TarjetaAcceso titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" url="/importacion" />
+            <TarjetaAcceso titulo="Gestión" descripcion="Gestión de datos organizacionales" color="#00b4d8" url="/gestion" />
+          </div>
+        )}
+
       </div>
     </div>
   );

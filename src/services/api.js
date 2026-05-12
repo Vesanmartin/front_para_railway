@@ -1,6 +1,6 @@
 // src/services/api.js
 const BFF_URL     = 'http://localhost:3005';
-const GATEWAY_URL = 'http://localhost:3001';
+const GATEWAY_URL = 'http://localhost:3000';
 
 // Autenticación — va directo al gateway
 export const login = async (email, password) => {
