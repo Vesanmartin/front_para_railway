@@ -14,6 +14,7 @@ const MODULOS = [
   { id: "crm_interacciones",   nombre: "CRM — Interacciones",        icono: "💬", fuente: "CRM" },
   { id: "crm_procesos_venta",  nombre: "CRM — Procesos Venta",       icono: "📊", fuente: "CRM" },
   { id: "pos_ventas",          nombre: "POS — Ventas",               icono: "🛒", fuente: "POS" },
+  { id: "analytics_visitas", nombre: "Analytics — Visitas Web", icono: "📈", fuente: "Analytics" }
 ];
 
 function Importacion() {
