@@ -8,6 +8,7 @@ import Admin from "./pages/Admin";
 import Kpi from "./pages/Kpi";
 import Chatbot from "./pages/Chatbot";
 import Informes from "./pages/Informes";
+import RecuperarPassword from "./pages/RecuperarPassword";
 
 function RutaProtegida({ children, rolesRequeridos }) {
   const token = localStorage.getItem("token");
@@ -37,6 +38,9 @@ function App() {
             <Dashboard />
           </RutaProtegida>
         } />
+
+        <Route path="/recuperar-password" element={<RecuperarPassword />}
+/>
 
         <Route path="/gestion" element={
           <RutaProtegida rolesRequeridos={["admin", "operador", "supersaiyajin"]}>

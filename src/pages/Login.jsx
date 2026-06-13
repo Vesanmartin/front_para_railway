@@ -79,6 +79,17 @@ function Login() {
         <button type="submit" className="button">
           Ingresar
         </button>
+        <p
+  style={{
+    color: "#007bff",
+    cursor: "pointer",
+    marginTop: "10px",
+    textAlign: "center"
+  }}
+  onClick={() => navigate("/recuperar-password")}
+>
+  ¿Olvidaste tu contraseña?
+</p>
         {showCodeInput && (
           <div>
             <input
@@ -93,6 +104,7 @@ function Login() {
               Verificar Código
             </button>
           </div>
+          
         )}
       </form>
       <div className="footer">
