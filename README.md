@@ -44,6 +44,8 @@ El sistema estará disponible en `http://localhost:5173`
 - **Informes** — reportes del sistema
 - **KPI** — indicadores clave
 
-## Credenciales de prueba
-- Email: `natalie@grupocordillera.cl`
-- Contraseña: `password`
+## Credenciales
+
+| Rol | Email | Contraseña |
+|-----|-------|-----------|
+| Super Admin | super@grupocordillera.cl | Admin1234 |
