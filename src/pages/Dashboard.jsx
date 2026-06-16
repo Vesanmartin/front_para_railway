@@ -25,14 +25,14 @@ function Dashboard() {
   }, []);
 
   const cargarResumen = async () => {
-    try {
-      const res = await fetch("http://localhost:3004/api/informes/resumen-sistema");
-      const data = await res.json();
-      if (data.success) setResumen(data);
-    } catch (err) {
-      console.error("Error cargando resumen:", err);
-    }
-  };
+  try {
+    const res = await fetch("http://localhost:3004/api/informes/resumen-sistema");
+    const data = await res.json();
+    if (data.success) setResumen(data);
+  } catch (err) {
+    console.error("Error cargando resumen:", err);
+  }
+};
 
   const rol = usuario?.rol || "";
 
