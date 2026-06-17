@@ -113,6 +113,20 @@ function Navbar() {
             </button>
           </>
         )}
+        <button
+  onClick={() => navigate("/dashboard")}
+  style={{
+    background: "#3498db",
+    color: "white",
+    border: "none",
+    cursor: "pointer",
+    fontSize: "16px",
+    padding: "6px 14px",
+    borderRadius: "8px"
+  }}
+>
+  🏠 Home
+</button>
 
         <button onClick={cerrarSesion}
           style={{ background: "#e74c3c", color: "white", border: "none", cursor: "pointer", fontSize: "16px", padding: "6px 14px", borderRadius: "8px" }}>
