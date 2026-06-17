@@ -1,6 +1,7 @@
 // src/pages/Dashboard.jsx
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
+import { useNavigate } from "react-router-dom";
 
 function decodificarToken(token) {
   try {
@@ -50,7 +51,7 @@ function Dashboard() {
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
       <div style={{ padding: "40px" }}>
-        <h1 style={{ marginBottom: "5px" }}>Dashboard</h1>
+        <h1 style={{ marginBottom: "5px" }}>Grupo Cordiller</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
           Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} — Rol: <strong>{rol}</strong>
         </p>
