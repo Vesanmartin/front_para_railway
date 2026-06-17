@@ -44,6 +44,7 @@ function Login() {
       if (data.success) {
         // Guardar token JWT para requests autenticados
         localStorage.setItem("token", data.token);
+        localStorage.setItem("rol", data.rol);
         navigate("/dashboard");
       } else {
         setError("Código incorrecto");

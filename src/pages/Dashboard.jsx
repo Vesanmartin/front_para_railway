@@ -36,6 +36,9 @@ function Dashboard() {
 
   const rol = usuario?.rol || "";
 
+  console.log("Usuario:", usuario);
+  console.log("Rol:", rol);
+
   const formatearFecha = (fecha) => {
     return new Date(fecha).toLocaleDateString("es-CL", {
       day: "2-digit", month: "2-digit", year: "numeric",
@@ -52,16 +55,18 @@ function Dashboard() {
           Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} — Rol: <strong>{rol}</strong>
         </p>
 
-        {/* Tarjetas métricas */}
+        
+        {/* Tarjetas métricas 
         {resumen && (
           <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
             <Tarjeta titulo="Usuarios del Sistema" valor={resumen.totalUsuarios} color="#0077b6" />
             <Tarjeta titulo="Importaciones Realizadas" valor={resumen.totalImportaciones} color="#00b4d8" />
             <Tarjeta titulo="Registros Importados" valor={parseInt(resumen.registrosTotales).toLocaleString()} color="#48cae4" />
           </div>
-        )}
+        )}*/}
+        
 
-        {/* Tabla últimas importaciones */}
+        {/* Tabla últimas importaciones 
         {resumen && (
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
             <h3 style={{ marginBottom: "16px", color: "#333" }}>Últimas Importaciones</h3>
@@ -96,56 +101,84 @@ function Dashboard() {
               </tbody>
             </table>
           </div>
-        )}
+        )} */}
 
         {/* Vista Admin */}
-        {rol === "admin" && (
-          <div style={{ background: "white", borderRadius: "12px", padding: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", maxWidth: "500px" }}>
-            <h3 style={{ color: "#023e8a", marginBottom: "8px" }}>Panel de Administración</h3>
-            <p style={{ color: "#666", fontSize: "14px", marginBottom: "20px" }}>
-              Gestiona usuarios, roles, permisos y doble autenticación del sistema.
-            </p>
-            <button
-              onClick={() => window.location.href = "/admin"}
-              style={{ padding: "12px 28px", background: "#023e8a", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "15px" }}>
-              Ir al Panel Admin
-            </button>
-          </div>
-        )}
+       <div
+  style={{
+    display: "flex",
+    gap: "20px",
+    flexWrap: "wrap"
+  }}
+>
 
-        {/* Vista Gerente */}
-        {rol === "gerente" && (
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-            <TarjetaAcceso titulo="Indicadores KPI" descripcion="Ver métricas operacionales" color="#0077b6" url="/kpi" />
-            <TarjetaAcceso titulo="Informes" descripcion="Análisis de ventas por período" color="#00b4d8" url="/informes" />
-            <TarjetaAcceso titulo="Chatbot" descripcion="Consulta inteligente de datos" color="#48cae4" url="/chatbot" />
-          </div>
-        )}
+  {(rol === "admin" || rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="Administración"
+      descripcion="Gestión de usuarios y roles"
+      color="#023e8a"
+      url="/admin"
+    />
+  )}
 
-        {/* Vista Operador */}
-        {rol === "operador" && (
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-            <TarjetaAcceso titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" url="/importacion" />
-          </div>
-        )}
+  {(rol === "admin" ||
+    rol === "gerente" ||
+    rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="KPIs"
+      descripcion="Indicadores del negocio"
+      color="#0077b6"
+      url="/kpi"
+    />
+  )}
 
-        {/* Vista SuperSaiyajin — acceso total */}
-        {rol === "supersaiyajin" && (
-          <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-            <TarjetaAcceso titulo="Panel Admin" descripcion="Gestión de usuarios y roles" color="#023e8a" url="/admin" />
-            <TarjetaAcceso titulo="Indicadores KPI" descripcion="Ver métricas operacionales" color="#0077b6" url="/kpi" />
-            <TarjetaAcceso titulo="Informes" descripcion="Análisis de ventas por período" color="#00b4d8" url="/informes" />
-            <TarjetaAcceso titulo="Chatbot" descripcion="Consulta inteligente de datos" color="#48cae4" url="/chatbot" />
-            <TarjetaAcceso titulo="Importación" descripcion="Importar datos desde ERP/CRM/POS" color="#0096c7" url="/importacion" />
-            <TarjetaAcceso titulo="Gestión" descripcion="Gestión de datos organizacionales" color="#00b4d8" url="/gestion" />
-          </div>
-        )}
+  {(rol === "admin" ||
+    rol === "gerente" ||
+    rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="Informes"
+      descripcion="Informes ejecutivos"
+      color="#00b4d8"
+      url="/informes"
+    />
+  )}
 
+  {(rol === "admin" ||
+    rol === "operador" ||
+    rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="Importaciones"
+      descripcion="Carga de archivos"
+      color="#0096c7"
+      url="/importacion"
+    />
+  )}
+
+  {(rol === "admin" ||
+    rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="Gestión"
+      descripcion="Gestión empresarial"
+      color="#48cae4"
+      url="/gestion"
+    />
+  )}
+
+  {(rol === "gerente" ||
+    rol === "supersaiyajin") && (
+    <TarjetaAcceso
+      titulo="Chatbot"
+      descripcion="Consultas inteligentes"
+      color="#90e0ef"
+      url="/chatbot"
+    />
+  )}
+
+</div>
       </div>
     </div>
   );
 }
-
 function Tarjeta({ titulo, valor, color }) {
   return (
     <div style={{
