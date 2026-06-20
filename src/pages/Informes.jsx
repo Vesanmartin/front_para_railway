@@ -232,8 +232,8 @@ const exportarPDF = async () => {
               <YAxis tickFormatter={(v) => `$${(v/1000000).toFixed(0)}M`} tick={{ fontSize: 11 }} />
               <Tooltip formatter={(v) => `$${parseInt(v).toLocaleString()}`} />
               <Legend />
-              <Bar dataKey="ventas"  name="Ventas"  fill="#0077b6" radius={[4,4,0,0]} />
-              <Bar dataKey="compras" name="Compras" fill="#e63946" radius={[4,4,0,0]} />
+              <Bar dataKey="ventas"  name="Ventas"  fill="#000d60" radius={[4,4,0,0]} />
+              <Bar dataKey="compras" name="Compras" fill="#19a7ac83" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -247,7 +247,7 @@ const exportarPDF = async () => {
               <XAxis type="number" tickFormatter={(v) => `$${(v/1000000).toFixed(0)}M`} tick={{ fontSize: 11 }} />
               <YAxis type="category" dataKey="nombre" tick={{ fontSize: 12 }} width={160} />
               <Tooltip formatter={(v) => `$${parseInt(v).toLocaleString()}`} />
-              <Bar dataKey="total" fill="#0077b6" radius={[0, 4, 4, 0]} />
+              <Bar dataKey="total" fill="#136a93" radius={[0, 4, 4, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

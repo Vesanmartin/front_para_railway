@@ -93,7 +93,7 @@ function Chatbot() {
       maxWidth: "70%", fontSize: "14px"
     };
     if (rol === "error") return {
-      alignSelf: "flex-start", background: "#fee2e2", color: "#991b1b",
+      alignSelf: "flex-start", background: "#fee2e2", color: "#370a83",
       padding: "10px 16px", borderRadius: "18px 18px 18px 4px",
       maxWidth: "70%", fontSize: "14px"
     };
@@ -173,7 +173,7 @@ function Chatbot() {
             {mensajes.map((m, i) => (
               <div key={i} style={estiloMensaje(m.rol)}>
                 {m.rol !== "usuario" && (
-                  <div style={{ fontSize: "11px", color: m.rol === "error" ? "#991b1b" : "#0077b6", marginBottom: "4px", fontWeight: "600" }}>
+                  <div style={{ fontSize: "11px", color: m.rol === "error" ? "#421285" : "#0077b6", marginBottom: "4px", fontWeight: "600" }}>
                     {m.rol === "asistente" ? (
                       <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
                         <img src={gatoImg} style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" }} alt="asistente" />
