@@ -261,7 +261,7 @@ const eliminarUsuario = async (id) => {
                 <tbody>
                   {archivosDescargados.map(a => (
                     <tr key={a.id} style={{ borderTop: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px" }}>ðŸ“„ {a.nombre}</td>
+                      <td style={{ padding: "12px" }}>📄„ {a.nombre}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.usuario}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.fecha}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.tamanio}</td>

@@ -6,15 +6,15 @@ import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 
 const MODULOS = [
-  { id: "erp_transacciones",   nombre: "ERP "” Transacciones",        icono: "ðŸ­", fuente: "ERP" },
-  { id: "rrhh_empleados",      nombre: "RRHH "” Empleados",           icono: "ðŸ‘¤", fuente: "RRHH" },
-  { id: "rrhh_remuneraciones", nombre: "RRHH "” Remuneraciones",      icono: "ðŸ’°", fuente: "RRHH" },
-  { id: "rrhh_asistencia",     nombre: "RRHH "” Asistencia",          icono: "ðŸ“…", fuente: "RRHH" },
-  { id: "crm_terceros",        nombre: "CRM "” Clientes/Proveedores", icono: "ðŸ‘¥", fuente: "CRM" },
-  { id: "crm_interacciones",   nombre: "CRM "” Interacciones",        icono: "ðŸ’¬", fuente: "CRM" },
-  { id: "crm_procesos_venta",  nombre: "CRM "” Procesos Venta",       icono: "ðŸ“Š", fuente: "CRM" },
-  { id: "pos_ventas",          nombre: "POS "” Ventas",               icono: "ðŸ›’", fuente: "POS" },
-  { id: "analytics_visitas", nombre: "Analytics "” Visitas Web", icono: "ðŸ“ˆ", fuente: "Analytics" }
+  { id: "erp_transacciones",   nombre: "ERP - Transacciones",        icono: "🏭", fuente: "ERP" },
+  { id: "rrhh_empleados",      nombre: "RRHH - Empleados",           icono: "👤", fuente: "RRHH" },
+  { id: "rrhh_remuneraciones", nombre: "RRHH - Remuneraciones",      icono: "💰", fuente: "RRHH" },
+  { id: "rrhh_asistencia",     nombre: "RRHH - Asistencia",          icono: "📅", fuente: "RRHH" },
+  { id: "crm_terceros",        nombre: "CRM - Clientes/Proveedores", icono: "👥", fuente: "CRM" },
+  { id: "crm_interacciones",   nombre: "CRM - Interacciones",        icono: "💬", fuente: "CRM" },
+  { id: "crm_procesos_venta",  nombre: "CRM - Procesos Venta",       icono: "📊", fuente: "CRM" },
+  { id: "pos_ventas",          nombre: "POS - Ventas",               icono: "🛒", fuente: "POS" },
+  { id: "analytics_visitas",   nombre: "Analytics - Visitas Web",    icono: "📈", fuente: "Analytics" }
 ];
 
 function Importacion() {
