@@ -5,6 +5,8 @@
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 
+const GATEWAY_URL = "https://backparaprobarrailway-production.up.railway.app";
+
 const MODULOS = [
   { id: "erp_transacciones",   nombre: "ERP - Transacciones",        icono: "🏭", fuente: "ERP" },
   { id: "rrhh_empleados",      nombre: "RRHH - Empleados",           icono: "👤", fuente: "RRHH" },
@@ -24,8 +26,8 @@ function Importacion() {
   const [cargando, setCargando]     = useState(false);
   const [progreso, setProgreso]     = useState(0);
   const [mensaje, setMensaje]       = useState({ texto: "", tipo: "" });
-  const [modoImport, setModoImport] = useState("csv"); // "csv" o "auto";
-  const [frecuencia, setFrecuencia] = useState("diaria"); // para tener frecuencia de descargar datos + boton que llame serverless
+  const [modoImport, setModoImport] = useState("csv");
+  const [frecuencia, setFrecuencia] = useState("diaria");
 
   const token = localStorage.getItem("token");
 
@@ -35,7 +37,7 @@ function Importacion() {
 
   const cargarHistorial = async () => {
     try {
-      const respuesta = await fetch("https://backparaprobarrailway-production.up.railway.app/api/import/historial", {
+      const respuesta = await fetch(`${GATEWAY_URL}/api/import/historial`, {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await respuesta.json();
@@ -66,7 +68,7 @@ function Importacion() {
       formData.append("modulo", modulo);
       formData.append("fuente", moduloData?.fuente || "ERP");
 
-      const respuesta = await fetch("https://backparaprobarrailway-production.up.railway.app/api/import/csv", {
+      const respuesta = await fetch(`${GATEWAY_URL}/api/import/csv`, {
         method: "POST",
         headers: { "Authorization": `Bearer ${token}` },
         body: formData
@@ -78,10 +80,7 @@ function Importacion() {
       const data = await respuesta.json();
 
       if (data.success) {
-        setMensaje({
-          texto: ` ${data.mensaje} (${data.errores} errores)`,
-          tipo: "exito"
-        });
+        setMensaje({ texto: `${data.mensaje} (${data.errores} errores)`, tipo: "exito" });
         setArchivo(null);
         document.getElementById("inputArchivo").value = "";
         await cargarHistorial();
@@ -100,44 +99,31 @@ function Importacion() {
   };
 
   const importarAuto = async () => {
-  const moduloData = MODULOS.find(m => m.id === modulo);
-  const fuente = moduloData?.fuente || "ERP";
+    const moduloData = MODULOS.find(m => m.id === modulo);
+    const fuente = moduloData?.fuente || "ERP";
 
-  setCargando(true);
-  setMensaje({ texto: "", tipo: "" });
+    setCargando(true);
+    setMensaje({ texto: "", tipo: "" });
 
-  try {
-    // Llama al endpoint Serverless local (puerto 4000/dev)
-    const respuesta = await fetch("PLACEHOLDER/dev/importar-automatico", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      },
-      body: JSON.stringify({
-        fuente: fuente,
-        modulo: modulo,
-        frecuencia: frecuencia,
-        sucursal: "Todas"
-      })
-    });
-
-    const data = await respuesta.json();
-    if (data.success) {
-      setMensaje({
-        texto: `Importacion automatica ${frecuencia} programada para ${fuente}`,
-        tipo: "exito"
+    try {
+      const respuesta = await fetch("PLACEHOLDER/dev/importar-automatico", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ fuente, modulo, frecuencia, sucursal: "Todas" })
       });
-      await cargarHistorial();
-    } else {
-      setMensaje({ texto: data.error || "Error en importacion automatica", tipo: "error" });
+      const data = await respuesta.json();
+      if (data.success) {
+        setMensaje({ texto: `Importacion automatica ${frecuencia} programada para ${fuente}`, tipo: "exito" });
+        await cargarHistorial();
+      } else {
+        setMensaje({ texto: data.error || "Error en importacion automatica", tipo: "error" });
+      }
+    } catch (err) {
+      setMensaje({ texto: "Error conectando con el servicio Serverless", tipo: "error" });
+    } finally {
+      setCargando(false);
     }
-  } catch (err) {
-    setMensaje({ texto: "Error conectando con el servicio Serverless", tipo: "error" });
-  } finally {
-    setCargando(false);
-  }
-};
+  };
 
   const badgeEstado = (estado) => ({
     padding: "4px 12px", borderRadius: "20px", fontSize: "12px", fontWeight: "bold",
@@ -156,7 +142,6 @@ function Importacion() {
         <h1 style={{ marginBottom: "5px" }}>Importación de Datos</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>Integración con sistemas ERP, RRHH, CRM y POS</p>
 
-        {/* Tarjetas resumen */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
           <TarjetaResumen titulo="Importaciones Exitosas" valor={exitosos} color="#059669" />
           <TarjetaResumen titulo="Importaciones Fallidas" valor={fallidos} color="#dc2626" />
@@ -164,50 +149,31 @@ function Importacion() {
           <TarjetaResumen titulo="Total Importaciones" valor={historial.length} color="#7c3aed" />
         </div>
 
-        {/* Panel de importación */}
         <div style={{ background: "white", borderRadius: "12px", padding: "30px", marginBottom: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
           <h3 style={{ marginBottom: "20px" }}>Nueva Importación</h3>
 
-          {/* Selector modo */}
           <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
             <button onClick={() => setModoImport("csv")}
-              style={{
-                padding: "10px 24px", borderRadius: "8px", border: "none", cursor: "pointer",
-                background: modoImport === "csv" ? "#0077b6" : "#f1f5f9",
-                color: modoImport === "csv" ? "white" : "#555", fontWeight: "600"
-              }}>
+              style={{ padding: "10px 24px", borderRadius: "8px", border: "none", cursor: "pointer", background: modoImport === "csv" ? "#0077b6" : "#f1f5f9", color: modoImport === "csv" ? "white" : "#555", fontWeight: "600" }}>
               Subir archivo CSV
             </button>
             <button onClick={() => setModoImport("auto")}
-              style={{
-                padding: "10px 24px", borderRadius: "8px", border: "none", cursor: "pointer",
-                background: modoImport === "auto" ? "#0077b6" : "#f1f5f9",
-                color: modoImport === "auto" ? "white" : "#555", fontWeight: "600"
-              }}>
+              style={{ padding: "10px 24px", borderRadius: "8px", border: "none", cursor: "pointer", background: modoImport === "auto" ? "#0077b6" : "#f1f5f9", color: modoImport === "auto" ? "white" : "#555", fontWeight: "600" }}>
               Importación automática
             </button>
           </div>
 
-          {/* Selector de módulo */}
           <p style={{ color: "#555", marginBottom: "12px", fontWeight: "500" }}>Seleccionar módulo:</p>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "24px" }}>
             {MODULOS.map(m => (
               <div key={m.id} onClick={() => setModulo(m.id)}
-                style={{
-                  padding: "12px 18px", borderRadius: "10px", cursor: "pointer",
-                  border: modulo === m.id ? "2px solid #0077b6" : "2px solid #e2e8f0",
-                  background: modulo === m.id ? "#eff6ff" : "white",
-                  transition: "all 0.2s", minWidth: "140px"
-                }}>
+                style={{ padding: "12px 18px", borderRadius: "10px", cursor: "pointer", border: modulo === m.id ? "2px solid #0077b6" : "2px solid #e2e8f0", background: modulo === m.id ? "#eff6ff" : "white", transition: "all 0.2s", minWidth: "140px" }}>
                 <div style={{ fontSize: "20px", marginBottom: "4px" }}>{m.icono}</div>
-                <div style={{ fontSize: "13px", fontWeight: "bold", color: modulo === m.id ? "#0077b6" : "#333" }}>
-                  {m.nombre}
-                </div>
+                <div style={{ fontSize: "13px", fontWeight: "bold", color: modulo === m.id ? "#0077b6" : "#333" }}>{m.nombre}</div>
               </div>
             ))}
           </div>
 
-          {/* Modo CSV */}
           {modoImport === "csv" && (
             <div>
               <p style={{ color: "#555", marginBottom: "8px", fontWeight: "500" }}>Archivo CSV:</p>
@@ -226,33 +192,26 @@ function Importacion() {
             </div>
           )}
 
-          {/* Modo automático */}
           {modoImport === "auto" && (
-  <div style={{ background: "#f8fafc", borderRadius: "8px", padding: "20px", marginBottom: "16px" }}>
-    <p style={{ color: "#555", fontSize: "14px", marginBottom: "16px" }}>
-      Selecciona el modulo y la frecuencia, luego presiona <strong>Importar Automatico</strong> para programar la importacion.
-    </p>
-    <p style={{ color: "#555", fontWeight: "500", marginBottom: "8px" }}>Frecuencia:</p>
-    <div style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
-      {["diaria", "semanal", "mensual"].map(f => (
-        <button key={f} onClick={() => setFrecuencia(f)}
-          style={{
-            padding: "8px 20px", borderRadius: "8px", border: "none", cursor: "pointer",
-            background: frecuencia === f ? "#7c3aed" : "#e2e8f0",
-            color: frecuencia === f ? "white" : "#555",
-            fontWeight: "600", textTransform: "capitalize"
-          }}>
-          {f}
-        </button>
-      ))}
-    </div>
-    <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>
-      Modulo seleccionado: <strong>{MODULOS.find(m => m.id === modulo)?.nombre}</strong> "” frecuencia: <strong>{frecuencia}</strong>
-    </p>
-  </div>
-)}
+            <div style={{ background: "#f8fafc", borderRadius: "8px", padding: "20px", marginBottom: "16px" }}>
+              <p style={{ color: "#555", fontSize: "14px", marginBottom: "16px" }}>
+                Selecciona el modulo y la frecuencia, luego presiona <strong>Importar Automatico</strong> para programar la importacion.
+              </p>
+              <p style={{ color: "#555", fontWeight: "500", marginBottom: "8px" }}>Frecuencia:</p>
+              <div style={{ display: "flex", gap: "10px", marginBottom: "8px" }}>
+                {["diaria", "semanal", "mensual"].map(f => (
+                  <button key={f} onClick={() => setFrecuencia(f)}
+                    style={{ padding: "8px 20px", borderRadius: "8px", border: "none", cursor: "pointer", background: frecuencia === f ? "#7c3aed" : "#e2e8f0", color: frecuencia === f ? "white" : "#555", fontWeight: "600", textTransform: "capitalize" }}>
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>
+                Modulo seleccionado: <strong>{MODULOS.find(m => m.id === modulo)?.nombre}</strong> — frecuencia: <strong>{frecuencia}</strong>
+              </p>
+            </div>
+          )}
 
-          {/* Barra progreso */}
           {progreso > 0 && (
             <div style={{ marginBottom: "16px" }}>
               <div style={{ background: "#e2e8f0", borderRadius: "99px", height: "8px" }}>
@@ -262,13 +221,8 @@ function Importacion() {
             </div>
           )}
 
-          {/* Mensaje */}
           {mensaje.texto && (
-            <div style={{
-              padding: "12px 16px", borderRadius: "8px", marginBottom: "16px",
-              background: mensaje.tipo === "exito" ? "#d1fae5" : "#fee2e2",
-              color: mensaje.tipo === "exito" ? "#065f46" : "#991b1b"
-            }}>
+            <div style={{ padding: "12px 16px", borderRadius: "8px", marginBottom: "16px", background: mensaje.tipo === "exito" ? "#d1fae5" : "#fee2e2", color: mensaje.tipo === "exito" ? "#065f46" : "#991b1b" }}>
               {mensaje.texto}
             </div>
           )}
@@ -276,16 +230,11 @@ function Importacion() {
           <button
             onClick={modoImport === "csv" ? importarCSV : importarAuto}
             disabled={cargando}
-            style={{
-              padding: "12px 32px", background: cargando ? "#94a3b8" : "#0077b6",
-              color: "white", border: "none", borderRadius: "8px",
-              cursor: cargando ? "not-allowed" : "pointer", fontSize: "15px", fontWeight: "600"
-            }}>
-            {cargando ? "â³ Importando..." : modoImport === "csv" ? "â–¶ Importar CSV" : "Importar Automático"}
+            style={{ padding: "12px 32px", background: cargando ? "#94a3b8" : "#0077b6", color: "white", border: "none", borderRadius: "8px", cursor: cargando ? "not-allowed" : "pointer", fontSize: "15px", fontWeight: "600" }}>
+            {cargando ? "⏳ Importando..." : modoImport === "csv" ? "▶ Importar CSV" : "Importar Automático"}
           </button>
         </div>
 
-        {/* Historial */}
         <div style={{ background: "white", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
           <div style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9" }}>
             <h3 style={{ margin: 0 }}>Historial de Importaciones</h3>
@@ -325,10 +274,7 @@ function Importacion() {
 
 function TarjetaResumen({ titulo, valor, color }) {
   return (
-    <div style={{
-      background: "white", borderRadius: "12px", padding: "20px 30px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.08)", borderLeft: `4px solid ${color}`, minWidth: "150px"
-    }}>
+    <div style={{ background: "white", borderRadius: "12px", padding: "20px 30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", borderLeft: `4px solid ${color}`, minWidth: "150px" }}>
       <p style={{ color: "#666", fontSize: "13px", margin: 0 }}>{titulo}</p>
       <p style={{ color, fontSize: "32px", fontWeight: "bold", margin: "5px 0 0" }}>{valor}</p>
     </div>

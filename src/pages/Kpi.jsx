@@ -1,7 +1,4 @@
 ﻿// src/pages/Kpi.jsx
-// Dashboard de KPIs con datos reales desde kpi-service
-// Usa Factory Method del backend para calcular métricas desde transacciones_erp
-
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import {
@@ -9,6 +6,7 @@ import {
   PieChart, Pie, Cell, Legend
 } from "recharts";
 
+const GATEWAY_URL = "https://backparaprobarrailway-production.up.railway.app";
 const COLORES = ["#0077b6", "#00b4d8", "#48cae4", "#90e0ef", "#023e8a"];
 
 function Kpi() {
@@ -21,7 +19,7 @@ function Kpi() {
 
   const cargarDatos = async () => {
     try {
-      const respuesta = await fetch("${import.meta.env.VITE_API_URL}/api/kpis/dashboard");
+      const respuesta = await fetch(`${GATEWAY_URL}/api/kpis/dashboard`);
       const data = await respuesta.json();
       if (data.success) setDatos(data);
     } catch (err) {
@@ -54,39 +52,19 @@ function Kpi() {
       <div style={{ padding: "40px" }}>
         <h1 style={{ marginBottom: "5px" }}>Indicadores KPI</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
-          Datos reales de los dos íºltimos meses (cargados en sistema) ví­a Factory Method
+          Datos reales de los dos últimos meses (cargados en sistema) vía Factory Method
         </p>
 
-        {/* Tarjetas resumen */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
-          <TarjetaKPI
-            titulo="Total Transacciones"
-            valor={datos?.ventas?.totalVentas?.toLocaleString()}
-            color="#0077b6"
-          />
-          <TarjetaKPI
-            titulo="Volumen total operaciones"
-            valor={`$${parseInt(datos?.ventas?.ingresoTotal).toLocaleString()}`}
-            color="#00b4d8"
-          />
-          <TarjetaKPI
-            titulo="Ticket Promedio"
-            valor={`$${parseInt(datos?.ventas?.ticketPromedio).toLocaleString()}`}
-            color="#48cae4"
-          />
-          <TarjetaKPI
-            titulo="Margen Rentabilidad"
-            valor={datos?.rentabilidad?.margen}
-            color="#023e8a"
-          />
+          <TarjetaKPI titulo="Total Transacciones" valor={datos?.ventas?.totalVentas?.toLocaleString()} color="#0077b6" />
+          <TarjetaKPI titulo="Volumen total operaciones" valor={`$${parseInt(datos?.ventas?.ingresoTotal).toLocaleString()}`} color="#00b4d8" />
+          <TarjetaKPI titulo="Ticket Promedio" valor={`$${parseInt(datos?.ventas?.ticketPromedio).toLocaleString()}`} color="#48cae4" />
+          <TarjetaKPI titulo="Margen Rentabilidad" valor={datos?.rentabilidad?.margen} color="#023e8a" />
         </div>
 
-        {/* Gráficos */}
         <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
-
-          {/* Gráfico de barras "” ventas por categorí­a */}
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 2, minWidth: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas por Categorí­a</h3>
+            <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas por Categoría</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dataCategorias}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -98,15 +76,13 @@ function Kpi() {
             </ResponsiveContainer>
           </div>
 
-          {/* Gráfico de dona "” distribución por cantidad */}
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 1, minWidth: "280px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "20px", color: "#333" }}>Distribución por Categorí­a</h3>
+            <h3 style={{ marginBottom: "20px", color: "#333" }}>Distribución por Categoría</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
-                <Pie data={dataPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
-                  {dataPie.map((_, i) => (
-                    <Cell key={i} fill={COLORES[i % COLORES.length]} />
-                  ))}
+                <Pie data={dataPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90}
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                  {dataPie.map((_, i) => <Cell key={i} fill={COLORES[i % COLORES.length]} />)}
                 </Pie>
                 <Tooltip />
               </PieChart>
@@ -114,13 +90,12 @@ function Kpi() {
           </div>
         </div>
 
-        {/* Tabla top categorí­as */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginTop: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-          <h3 style={{ marginBottom: "16px", color: "#333" }}>Top Categorí­as</h3>
+          <h3 style={{ marginBottom: "16px", color: "#333" }}>Top Categorías</h3>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#f8fafc" }}>
-                <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Categorí­a</th>
+                <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Categoría</th>
                 <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Transacciones</th>
                 <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Total Ventas</th>
               </tr>
@@ -143,11 +118,7 @@ function Kpi() {
 
 function TarjetaKPI({ titulo, valor, color }) {
   return (
-    <div style={{
-      background: "white", borderRadius: "12px", padding: "20px 30px",
-      boxShadow: "0 2px 8px rgba(0,0,0,0.08)", borderLeft: `4px solid ${color}`,
-      minWidth: "180px"
-    }}>
+    <div style={{ background: "white", borderRadius: "12px", padding: "20px 30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", borderLeft: `4px solid ${color}`, minWidth: "180px" }}>
       <p style={{ color: "#666", fontSize: "13px", margin: 0 }}>{titulo}</p>
       <p style={{ color, fontSize: "28px", fontWeight: "bold", margin: "5px 0 0" }}>{valor}</p>
     </div>

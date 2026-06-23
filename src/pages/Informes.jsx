@@ -10,6 +10,8 @@ import {
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
 
+const GATEWAY_URL = "https://backparaprobarrailway-production.up.railway.app";
+
 const COLORES = ["#0077b6", "#00b4d8", "#48cae4", "#90e0ef", "#023e8a"];
 
 const MESES = {
@@ -36,7 +38,7 @@ function Informes() {
       if (anio)       params.append("año", anio);
       if (mes_inicio) params.append("mes_inicio", mes_inicio);
       if (mes_fin)    params.append("mes_fin", mes_fin);
-      const url = `PLACEHOLDER/api/informes/datos-dashboard?${params.toString()}`;
+      const url = `${GATEWAY_URL}/api/informes/datos-dashboard?${params.toString()}`;
       const respuesta = await fetch(url);
       const json = await respuesta.json();
       if (json.success) {
@@ -54,18 +56,17 @@ function Informes() {
   if (cargando) return (
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
-      <div id={{ padding: "40px", textAlign: "center", color: "#666" }}>Cargando informes...</div>
+      <div style={{ padding: "40px", textAlign: "center", color: "#666" }}>Cargando informes...</div>
     </div>
   );
 
   if (error) return (
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
-      <div id={{ padding: "40px", textAlign: "center", color: "#e63946" }}>{error}</div>
+      <div style={{ padding: "40px", textAlign: "center", color: "#e63946" }}>{error}</div>
     </div>
   );
 
-  // Preparar datos para gráficos
   const dataVentasMes = (datos.ventas_erp || []).map(v => ({
     periodo: `${MESES[v.mes]} ${v.año}`,
     ventas:  parseFloat(v.total_ventas),
@@ -88,28 +89,23 @@ function Informes() {
 
   const dataComparativo = dataVentasMes.map(v => {
     const compra = dataComprasMes.find(c => c.periodo === v.periodo);
-    return {
-      periodo: v.periodo,
-      ventas:  v.ventas,
-      compras: compra ? compra.compras : 0
-    };
+    return { periodo: v.periodo, ventas: v.ventas, compras: compra ? compra.compras : 0 };
   });
 
-  const totalVentas       = datos.ventas_erp?.reduce((acc, v) => acc + parseFloat(v.total_ventas), 0) || 0;
-  const totalCompras      = datos.compras_erp?.reduce((acc, v) => acc + parseFloat(v.total_compras), 0) || 0;
-  const porcentajeMargen  = totalVentas > 0 ? ((( totalVentas - totalCompras) / totalVentas) * 100).toFixed(1) : 0;
+  const totalVentas      = datos.ventas_erp?.reduce((acc, v) => acc + parseFloat(v.total_ventas), 0) || 0;
+  const totalCompras     = datos.compras_erp?.reduce((acc, v) => acc + parseFloat(v.total_compras), 0) || 0;
+  const porcentajeMargen = totalVentas > 0 ? (((totalVentas - totalCompras) / totalVentas) * 100).toFixed(1) : 0;
 
-const exportarPDF = async () => {
-   const elemento = document.getElementById("contenido-informe");
-   const canvas = await html2canvas(elemento, { scale: 2 });
-   const imgData = canvas.toDataURL("image/png");
-   const pdf = new jsPDF("p", "mm", "a4");
-   const ancho = pdf.internal.pageSize.getWidth();
-   const alto  = (canvas.height * ancho) / canvas.width;
-   pdf.addImage(imgData, "PNG", 0, 0, ancho, alto);
-   pdf.save(`informe_cordillera_${filtroAnio || "todos"}.pdf`);
-};
-
+  const exportarPDF = async () => {
+    const elemento = document.getElementById("contenido-informe");
+    const canvas = await html2canvas(elemento, { scale: 2 });
+    const imgData = canvas.toDataURL("image/png");
+    const pdf = new jsPDF("p", "mm", "a4");
+    const ancho = pdf.internal.pageSize.getWidth();
+    const alto  = (canvas.height * ancho) / canvas.width;
+    pdf.addImage(imgData, "PNG", 0, 0, ancho, alto);
+    pdf.save(`informe_cordillera_${filtroAnio || "todos"}.pdf`);
+  };
 
   return (
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
@@ -118,12 +114,11 @@ const exportarPDF = async () => {
 
         <h1 style={{ marginBottom: "5px" }}>Informes Cordillera</h1>
         <p style={{ color: "#666", marginBottom: "24px" }}>
-          Datos reales desde MySQL via <strong>informes-service</strong> "” Circuit Breaker activo
+          Datos reales desde MySQL via <strong>informes-service</strong> — Circuit Breaker activo
         </p>
 
-        {/* Panel de filtros */}
+        {/* Filtros */}
         <div style={{ background: "white", borderRadius: "12px", padding: "20px 24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", gap: "16px", alignItems: "flex-end", flexWrap: "wrap" }}>
-
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>Año</label>
             <select value={filtroAnio} onChange={(e) => setFiltroAnio(e.target.value)}
@@ -134,7 +129,6 @@ const exportarPDF = async () => {
               <option value="2025">2025</option>
             </select>
           </div>
-
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>Mes inicio</label>
             <select value={filtroMesInicio} onChange={(e) => setFiltroMesInicio(e.target.value)}
@@ -145,7 +139,6 @@ const exportarPDF = async () => {
               ))}
             </select>
           </div>
-
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>Mes fin</label>
             <select value={filtroMesFin} onChange={(e) => setFiltroMesFin(e.target.value)}
@@ -156,12 +149,10 @@ const exportarPDF = async () => {
               ))}
             </select>
           </div>
-
           <button onClick={() => cargarDatos(filtroAnio, filtroMesInicio, filtroMesFin)}
             style={{ padding: "8px 20px", background: "#0077b6", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px", height: "36px" }}>
             Aplicar filtros
           </button>
-
           <button onClick={() => { setFiltroAnio(""); setFiltroMesInicio(""); setFiltroMesFin(""); cargarDatos("","",""); }}
             style={{ padding: "8px 20px", background: "#f1f5f9", color: "#555", border: "1px solid #ddd", borderRadius: "8px", cursor: "pointer", fontSize: "14px", height: "36px" }}>
             Limpiar
@@ -169,8 +160,7 @@ const exportarPDF = async () => {
           <button onClick={exportarPDF}
             style={{ padding: "8px 20px", background: "#2a9d8f", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600", fontSize: "14px", height: "36px", marginLeft: "auto" }}>
             Exportar PDF
-        </button>
-
+          </button>
         </div>
 
         {/* Tarjetas resumen */}
@@ -178,21 +168,13 @@ const exportarPDF = async () => {
           <TarjetaResumen titulo="Total Transacciones ERP"
             valor={datos.ventas_erp?.reduce((acc, v) => acc + parseInt(v.cantidad_transacciones), 0).toLocaleString()}
             color="#0077b6" />
-          <TarjetaResumen titulo="Ventas Totales ERP"
-            valor={`$${parseInt(totalVentas).toLocaleString()}`}
-            color="#00b4d8" />
-          <TarjetaResumen titulo="Total Compras ERP"
-            valor={`$${parseInt(totalCompras).toLocaleString()}`}
-            color="#e63946" />
-          <TarjetaResumen titulo="Margen Bruto"
-            valor={`${porcentajeMargen}%`}
-            color="#2a9d8f" />
-          <TarjetaResumen titulo="Sucursales Activas"
-            valor={dataSucursales.length}
-            color="#48cae4" />
+          <TarjetaResumen titulo="Ventas Totales ERP" valor={`$${parseInt(totalVentas).toLocaleString()}`} color="#00b4d8" />
+          <TarjetaResumen titulo="Total Compras ERP" valor={`$${parseInt(totalCompras).toLocaleString()}`} color="#e63946" />
+          <TarjetaResumen titulo="Margen Bruto" valor={`${porcentajeMargen}%`} color="#2a9d8f" />
+          <TarjetaResumen titulo="Sucursales Activas" valor={dataSucursales.length} color="#48cae4" />
         </div>
 
-        {/* Fila 1: Lí­nea + Torta */}
+        {/* Línea + Torta */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "20px", flexWrap: "wrap" }}>
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 2, minWidth: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
             <h3 style={{ marginBottom: "20px", color: "#333" }}>Evolución de Ventas ERP</h3>
@@ -206,7 +188,6 @@ const exportarPDF = async () => {
               </LineChart>
             </ResponsiveContainer>
           </div>
-
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 1, minWidth: "280px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
             <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas por Sucursal</h3>
             <ResponsiveContainer width="100%" height={280}>
@@ -221,7 +202,6 @@ const exportarPDF = async () => {
           </div>
         </div>
 
-        
         {/* Ventas vs Compras */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
           <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas vs Compras por Mes</h3>
@@ -233,7 +213,7 @@ const exportarPDF = async () => {
               <Tooltip formatter={(v) => `$${parseInt(v).toLocaleString()}`} />
               <Legend />
               <Bar dataKey="ventas"  name="Ventas"  fill="#000d60" radius={[4,4,0,0]} />
-              <Bar dataKey="compras" name="Compras" fill="#19a7ac83" radius={[4,4,0,0]} />
+              <Bar dataKey="compras" name="Compras" fill="#0891b2" radius={[4,4,0,0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>

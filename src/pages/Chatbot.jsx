@@ -1,356 +1,232 @@
-﻿// src/pages/Chatbot.jsx
-// Chatbot CORDI powered by Ollama llama3.2
-// Muestra gráficos automáticamente cuando la respuesta tiene datos numéricos
-// Usa Recharts para las visualizaciones
+﻿// src/pages/Admin.jsx
+// Panel exclusivo para el administrador del sistema
+// Permite gestionar usuarios, roles, perfiles y doble autenticación
+// PATRÓN: Strategy — los permisos de cada usuario se obtienen desde
+// el auth-service según su rol (EstrategiaAdmin, EstrategiaGerente, EstrategiaOperador)
 
-import gatoImg from "../assets/gatomeme.png";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
-import {
-  BarChart, Bar, XAxis, YAxis, CartesianGrid,
-  Tooltip, ResponsiveContainer, LineChart, Line,
-  PieChart, Pie, Cell, Legend
-} from "recharts";
 
-// Colores para los gráficos
-const COLORES = ["#0077b6", "#00b4d8", "#48cae4", "#90e0ef", "#023e8a"];
+const GATEWAY_URL = "https://backparaprobarrailway-production.up.railway.app";
 
-// Nombres de los meses para mostrar en los gráficos
-const MESES = {
-  1:"Ene", 2:"Feb", 3:"Mar", 4:"Abr", 5:"May", 6:"Jun",
-  7:"Jul", 8:"Ago", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dic"
-};
+function Admin() {
+  //Estados principales
+  const [usuarios, setUsuarios] = useState([]);
+  const [perfiles, setPerfiles] = useState({});
+  const [nuevoUsuario, setNuevoUsuario] = useState({ email: "", password: "", rol: "operador" });
+  const [mensaje, setMensaje] = useState({ texto: "", tipo: "" });
+  const [cargando, setCargando] = useState(false);
 
-function Chatbot() {
-  // Estado del chat
-  const [mensajes, setMensajes] = useState([
-    { rol: "sistema", texto: "Hola, soy CORDI, el analista de Grupo Cordillera. Pregíºntame sobre ventas, KPIs o informes... si te atreves." }
-  ]);
-  const [pregunta, setPregunta]       = useState("");
-  const [cargando, setCargando]       = useState(false);
+  const token = localStorage.getItem("token");
 
-  // Estado para los gráficos "” guarda los datos del íºltimo mensaje
-  const [datosGrafico, setDatosGrafico] = useState(null);
-
-  // Tipo de gráfico activo (para el selector de pestañas)
-  const [tipoGrafico, setTipoGrafico] = useState("ventas_mes");
-
-  const finRef = useRef(null);
-
-  // Scroll automático al íºltimo mensaje
+  // Cargar usuarios reales desde auth-service
   useEffect(() => {
-    finRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [mensajes]);
+    cargarUsuarios();
+  }, []);
 
-  // Función para enviar la pregunta al backend
-  const enviar = async () => {
-    if (!pregunta.trim() || cargando) return;
-
-    const textoPregunta = pregunta.trim();
-    setPregunta("");
-    setMensajes(prev => [...prev, { rol: "usuario", texto: textoPregunta }]);
-    setCargando(true);
-
+  const cargarUsuarios = async () => {
     try {
-      const respuesta = await fetch("PLACEHOLDER/api/informes/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ pregunta: textoPregunta })
-      });
-
+      const respuesta = await fetch(`${GATEWAY_URL}/api/auth/users`);
       const data = await respuesta.json();
-
-      if (data.success) {
-        // Guardamos el mensaje de texto
-        setMensajes(prev => [...prev, { rol: "asistente", texto: data.respuesta }]);
-
-        // Si vienen datos estructurados, los guardamos para graficar
-        if (data.datos_grafico) {
-          setDatosGrafico(data.datos_grafico);
-        }
-      } else {
-        setMensajes(prev => [...prev, { rol: "error", texto: "Error: " + data.error }]);
+      if (Array.isArray(data)) {
+        setUsuarios(data);
+        data.forEach(u => cargarPermisos(u.email, u.rol || "operador"));
       }
     } catch (err) {
-      setMensajes(prev => [...prev, { rol: "error", texto: "Error conectando con el servicio de informes" }]);
+      console.error("Error cargando usuarios:", err);
+    }
+  };
+
+  const cargarPermisos = async (email, rol) => {
+    try {
+      const respuesta = await fetch(`${GATEWAY_URL}/api/auth/permisos?rol=${rol}`);
+      const data = await respuesta.json();
+      setPerfiles(prev => ({
+        ...prev,
+        [email]: {
+          ...data,
+          dobleAuth: false,
+          rol
+        }
+      }));
+    } catch (err) {
+      console.error("Error cargando permisos:", err);
+    }
+  };
+
+  const crearUsuario = async () => {
+    if (!nuevoUsuario.email || !nuevoUsuario.password) {
+      setMensaje({ texto: "Email y password son obligatorios", tipo: "error" });
+      return;
+    }
+    setCargando(true);
+    try {
+      const respuesta = await fetch(`${GATEWAY_URL}/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: nuevoUsuario.email, password: nuevoUsuario.password })
+      });
+      const data = await respuesta.json();
+      if (respuesta.ok) {
+        setMensaje({ texto: `Usuario ${nuevoUsuario.email} creado correctamente`, tipo: "exito" });
+        const dataUsuarios = await fetch(`${GATEWAY_URL}/api/auth/users`);
+        const listaUsuarios = await dataUsuarios.json();
+        const usuarioNuevo = listaUsuarios.find(u => u.email === nuevoUsuario.email);
+        if (usuarioNuevo) {
+          await fetch(`${GATEWAY_URL}/api/auth/usuarios/${usuarioNuevo.id}/rol`, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ rol: nuevoUsuario.rol })
+          });
+        }
+        await cargarUsuarios();
+        setNuevoUsuario({ email: "", password: "", rol: "operador" });
+      } else {
+        setMensaje({ texto: data.error || "Error al crear usuario", tipo: "error" });
+      }
+    } catch (err) {
+      setMensaje({ texto: "Error conectando con auth-service", tipo: "error" });
     } finally {
       setCargando(false);
     }
   };
 
-  const manejarTecla = (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      enviar();
+  const cambiarRol = async (id, email, nuevoRol) => {
+    try {
+      const respuesta = await fetch(`${GATEWAY_URL}/api/auth/usuarios/${id}/rol`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ rol: nuevoRol })
+      });
+      const data = await respuesta.json();
+      if (data.success) {
+        await cargarPermisos(email, nuevoRol);
+      } else {
+        console.error("Error:", data.error);
+      }
+    } catch (err) {
+      console.error("Error actualizando rol:", err);
     }
   };
 
-  // Estilos de los mensajes segíºn el rol
-  const estiloMensaje = (rol) => {
-    if (rol === "usuario") return {
-      alignSelf: "flex-end", background: "#0077b6", color: "white",
-      padding: "10px 16px", borderRadius: "18px 18px 4px 18px",
-      maxWidth: "70%", fontSize: "14px"
-    };
-    if (rol === "error") return {
-      alignSelf: "flex-start", background: "#fee2e2", color: "#370a83",
-      padding: "10px 16px", borderRadius: "18px 18px 18px 4px",
-      maxWidth: "70%", fontSize: "14px"
-    };
-    return {
-      alignSelf: "flex-start", background: "white", color: "#333",
-      padding: "10px 16px", borderRadius: "18px 18px 18px 4px",
-      maxWidth: "70%", fontSize: "14px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)"
-    };
+  const toggleDobleAuth = (email) => {
+    setPerfiles(prev => ({
+      ...prev,
+      [email]: { ...prev[email], dobleAuth: !prev[email]?.dobleAuth }
+    }));
   };
-
-  // Prepara los datos de ventas por mes para Recharts
-  const dataVentasMes = (datosGrafico?.ventas_por_mes || [])
-    .map(v => ({
-      periodo: `${MESES[v.mes]} ${v.año}`,
-      ventas:  parseFloat(v.total_ventas)
-    }))
-    .reverse();
-
-  // Prepara los datos de ventas por sucursal para Recharts
-  const dataSucursales = (datosGrafico?.ventas_por_sucursal || [])
-    .map(s => ({
-      name:  s.sucursal,
-      value: parseFloat(s.total_ventas)
-    }));
-
-  // Prepara los datos de top productos para Recharts
-  const dataProductos = (datosGrafico?.top_productos || [])
-    .map(p => ({
-      nombre: p.nombre_producto,
-      total:  parseFloat(p.total_generado)
-    }));
-
-  // Prepara los datos de compras por mes para Recharts
-  const dataComprasMes = (datosGrafico?.compras_por_mes || [])
-    .map(c => ({
-      periodo: `${MESES[c.mes]} ${c.año}`,
-      compras: parseFloat(c.total_compras)
-    }))
-    .reverse();
-
-  // Verifica si hay datos disponibles para mostrar el panel
-  const hayDatos = datosGrafico && (
-    dataVentasMes.length > 0 ||
-    dataSucursales.length > 0 ||
-    dataProductos.length > 0 ||
-    dataComprasMes.length > 0
-  );
 
   return (
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
+      <div style={{ padding: "40px" }}>
+        <h1 style={{ marginBottom: "5px" }}>Panel de Administración</h1>
+        <p style={{ color: "#666", marginBottom: "30px" }}>
+          Gestión de usuarios, roles y permisos — Solo accesible para administradores
+        </p>
 
-      {/* Layout principal "” chat + gráfico lado a lado */}
-      <div style={{
-        padding: "40px",
-        maxWidth: "1400px",
-        margin: "0 auto",
-        display: "flex",
-        gap: "24px",
-        alignItems: "flex-start"
-      }}>
-
-        {/* Panel izquierdo "” Chat */}
-        <div style={{ flex: hayDatos ? "0 0 480px" : "1" }}>
-          <h1 style={{ marginBottom: "5px" }}>Chatbot Cordillera</h1>
-          <p style={{ color: "#666", marginBottom: "24px" }}>
-            Asistente inteligente powered by <strong>Ollama llama3.2</strong> via Circuit Breaker
-          </p>
-
-          {/* írea de mensajes */}
-          <div style={{
-            background: "#f8fafc", borderRadius: "12px", padding: "20px",
-            height: "450px", overflowY: "auto", display: "flex",
-            flexDirection: "column", gap: "12px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)"
-          }}>
-            {mensajes.map((m, i) => (
-              <div key={i} style={estiloMensaje(m.rol)}>
-                {m.rol !== "usuario" && (
-                  <div style={{ fontSize: "11px", color: m.rol === "error" ? "#421285" : "#0077b6", marginBottom: "4px", fontWeight: "600" }}>
-                    {m.rol === "asistente" ? (
-                      <span style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                        <img src={gatoImg} style={{ width: "45px", height: "45px", borderRadius: "50%", objectFit: "cover" }} alt="asistente" />
-                        Asistente
-                      </span>
-                    ) : m.rol === "sistema" ? "â„¹ï¸ Sistema" : "âš ï¸ Error"}
-                  </div>
-                )}
-                <div style={{ whiteSpace: "pre-wrap", lineHeight: "1.5" }}>{m.texto}</div>
-              </div>
-            ))}
-
-            {/* Indicador de carga */}
-            {cargando && (
-              <div style={{ alignSelf: "flex-start", background: "white", padding: "10px 16px", borderRadius: "18px 18px 18px 4px", boxShadow: "0 1px 4px rgba(0,0,0,0.08)" }}>
-                <div style={{ fontSize: "11px", color: "#0077b6", marginBottom: "4px", fontWeight: "600", display: "flex", alignItems: "center", gap: "6px" }}>
-                  <img src={gatoImg} style={{ width: "24px", height: "24px", borderRadius: "50%", objectFit: "cover" }} alt="asistente" />
-                  Asistente
-                </div>
-                <div style={{ color: "#94a3b8", fontSize: "14px" }}>Pensando...</div>
-              </div>
-            )}
-            <div ref={finRef} />
-          </div>
-
-          {/* Input para escribir */}
-          <div style={{ display: "flex", gap: "10px", marginTop: "16px" }}>
-            <input
-              value={pregunta}
-              onChange={(e) => setPregunta(e.target.value)}
-              onKeyDown={manejarTecla}
-              placeholder="Escribe tu pregunta sobre KPIs, ventas o informes..."
-              disabled={cargando}
-              style={{
-                flex: 1, padding: "12px 16px", borderRadius: "10px",
-                border: "1px solid #ddd", fontSize: "14px",
-                outline: "none", background: cargando ? "#f8fafc" : "white"
-              }}
-            />
-            <button onClick={enviar} disabled={cargando || !pregunta.trim()}
-              style={{
-                padding: "12px 24px",
-                background: cargando || !pregunta.trim() ? "#94a3b8" : "#0077b6",
-                color: "white", border: "none", borderRadius: "10px",
-                cursor: cargando || !pregunta.trim() ? "not-allowed" : "pointer",
-                fontWeight: "600", fontSize: "14px"
-              }}>
-              {cargando ? "..." : "Enviar"}
+        <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <h3 style={{ marginBottom: "16px" }}>Crear nuevo usuario</h3>
+          <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "12px" }}>
+            <input placeholder="Email" value={nuevoUsuario.email}
+              onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, email: e.target.value })}
+              style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ddd", flex: 2 }} />
+            <input placeholder="Password" type="password" value={nuevoUsuario.password}
+              onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, password: e.target.value })}
+              style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ddd", flex: 2 }} />
+            <select value={nuevoUsuario.rol}
+              onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })}
+              style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }}>
+              <option value="operador">Operador</option>
+              <option value="gerente">Gerente</option>
+              <option value="admin">Admin</option>
+            </select>
+            <button onClick={crearUsuario} disabled={cargando}
+              style={{ padding: "10px 24px", background: cargando ? "#94a3b8" : "#0077b6", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
+              {cargando ? "Creando..." : "+ Crear Usuario"}
             </button>
           </div>
-          <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>
-            Presiona Enter para enviar
-          </p>
+          {mensaje.texto && (
+            <div style={{
+              padding: "10px 14px", borderRadius: "8px", fontSize: "13px",
+              background: mensaje.tipo === "exito" ? "#d1fae5" : "#fee2e2",
+              color: mensaje.tipo === "exito" ? "#065f46" : "#991b1b"
+            }}>
+              {mensaje.texto}
+            </div>
+          )}
         </div>
 
-        {/* Panel derecho "” Gráficos (solo aparece cuando hay datos) */}
-        {hayDatos && (
-          <div style={{
-            flex: 1,
-            background: "white",
-            borderRadius: "12px",
-            padding: "24px",
-            boxShadow: "0 2px 8px rgba(0,0,0,0.08)",
-            minWidth: 0
-          }}>
-            <h3 style={{ marginBottom: "16px", color: "#333" }}>
-              ðŸ“Š Visualización de datos
-            </h3>
-
-            {/* Pestañas para cambiar el tipo de gráfico */}
-            <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
-              {dataVentasMes.length > 0 && (
-                <button onClick={() => setTipoGrafico("ventas_mes")}
-                  style={{
-                    padding: "6px 14px", borderRadius: "20px", border: "none",
-                    cursor: "pointer", fontSize: "12px", fontWeight: "600",
-                    background: tipoGrafico === "ventas_mes" ? "#0077b6" : "#f1f5f9",
-                    color: tipoGrafico === "ventas_mes" ? "white" : "#555"
-                  }}>
-                  Ventas por Mes
-                </button>
-              )}
-              {dataSucursales.length > 0 && (
-                <button onClick={() => setTipoGrafico("sucursales")}
-                  style={{
-                    padding: "6px 14px", borderRadius: "20px", border: "none",
-                    cursor: "pointer", fontSize: "12px", fontWeight: "600",
-                    background: tipoGrafico === "sucursales" ? "#0077b6" : "#f1f5f9",
-                    color: tipoGrafico === "sucursales" ? "white" : "#555"
-                  }}>
-                  Por Sucursal
-                </button>
-              )}
-              {dataProductos.length > 0 && (
-                <button onClick={() => setTipoGrafico("productos")}
-                  style={{
-                    padding: "6px 14px", borderRadius: "20px", border: "none",
-                    cursor: "pointer", fontSize: "12px", fontWeight: "600",
-                    background: tipoGrafico === "productos" ? "#0077b6" : "#f1f5f9",
-                    color: tipoGrafico === "productos" ? "white" : "#555"
-                  }}>
-                  Top Productos
-                </button>
-              )}
-              {dataComprasMes.length > 0 && (
-                <button onClick={() => setTipoGrafico("compras_mes")}
-                  style={{
-                    padding: "6px 14px", borderRadius: "20px", border: "none",
-                    cursor: "pointer", fontSize: "12px", fontWeight: "600",
-                    background: tipoGrafico === "compras_mes" ? "#0077b6" : "#f1f5f9",
-                    color: tipoGrafico === "compras_mes" ? "white" : "#555"
-                  }}>
-                  Compras por Mes
-                </button>
-              )}
-            </div>
-
-            {/* Gráfico de ventas por mes "” lí­nea */}
-            {tipoGrafico === "ventas_mes" && dataVentasMes.length > 0 && (
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={dataVentasMes}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="periodo" tick={{ fontSize: 11 }} />
-                  <YAxis tickFormatter={v => `$${(v/1000000).toFixed(0)}M`} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={v => `$${parseInt(v).toLocaleString()}`} />
-                  <Line type="monotone" dataKey="ventas" stroke="#0077b6" strokeWidth={2} dot={{ r: 4 }} />
-                </LineChart>
-              </ResponsiveContainer>
-            )}
-
-            {/* Gráfico de ventas por sucursal "” torta */}
-            {tipoGrafico === "sucursales" && dataSucursales.length > 0 && (
-              <ResponsiveContainer width="100%" height={300}>
-                <PieChart>
-                  <Pie data={dataSucursales} dataKey="value" nameKey="name"
-                    cx="50%" cy="50%" outerRadius={100}
-                    label={({ name, percent }) => `${name} ${(percent*100).toFixed(0)}%`}>
-                    {dataSucursales.map((_, i) => (
-                      <Cell key={i} fill={COLORES[i % COLORES.length]} />
-                    ))}
-                  </Pie>
-                  <Tooltip formatter={v => `$${parseInt(v).toLocaleString()}`} />
-                  <Legend />
-                </PieChart>
-              </ResponsiveContainer>
-            )}
-
-            {/* Gráfico de top productos "” barras horizontales */}
-            {tipoGrafico === "productos" && dataProductos.length > 0 && (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={dataProductos} layout="vertical">
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis type="number" tickFormatter={v => `$${(v/1000000).toFixed(0)}M`} tick={{ fontSize: 11 }} />
-                  <YAxis type="category" dataKey="nombre" tick={{ fontSize: 11 }} width={140} />
-                  <Tooltip formatter={v => `$${parseInt(v).toLocaleString()}`} />
-                  <Bar dataKey="total" fill="#0077b6" radius={[0, 4, 4, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
-
-            {/* Gráfico de compras por mes "” barras */}
-            {tipoGrafico === "compras_mes" && dataComprasMes.length > 0 && (
-              <ResponsiveContainer width="100%" height={300}>
-                <BarChart data={dataComprasMes}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="periodo" tick={{ fontSize: 11 }} />
-                  <YAxis tickFormatter={v => `$${(v/1000000).toFixed(0)}M`} tick={{ fontSize: 11 }} />
-                  <Tooltip formatter={v => `$${parseInt(v).toLocaleString()}`} />
-                  <Bar dataKey="compras" fill="#e63946" radius={[4, 4, 0, 0]} />
-                </BarChart>
-              </ResponsiveContainer>
-            )}
+        <div style={{ background: "white", borderRadius: "12px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
+          <div style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9" }}>
+            <h3 style={{ margin: 0 }}>Usuarios del sistema</h3>
+            <p style={{ color: "#666", fontSize: "13px", margin: "4px 0 0" }}>
+              Los módulos se asignan automáticamente según el rol via Strategy Pattern
+            </p>
           </div>
-        )}
+          <table style={{ width: "100%", borderCollapse: "collapse" }}>
+            <thead>
+              <tr style={{ background: "#f8fafc" }}>
+                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Email</th>
+                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Rol</th>
+                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Doble Auth</th>
+                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Módulos permitidos</th>
+              </tr>
+            </thead>
+            <tbody>
+              {usuarios.length === 0 && (
+                <tr><td colSpan="4" style={{ padding: "30px", textAlign: "center", color: "#999" }}>Cargando usuarios...</td></tr>
+              )}
+              {usuarios.map((u, i) => {
+                const perfil = perfiles[u.email];
+                return (
+                  <tr key={i} style={{ borderTop: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "14px 16px", fontWeight: "500" }}>{u.email}</td>
+                    <td style={{ padding: "14px 16px" }}>
+                      <select
+                        value={perfil?.rol || u.rol || "operador"}
+                        onChange={(e) => cambiarRol(u.id, u.email, e.target.value)}
+                        style={{ padding: "5px 10px", borderRadius: "8px", border: "1px solid #ddd", fontSize: "13px" }}>
+                        <option value="operador">Operador</option>
+                        <option value="gerente">Gerente</option>
+                        <option value="admin">Admin</option>
+                      </select>
+                    </td>
+                    <td style={{ padding: "14px 16px" }}>
+                      <button onClick={() => toggleDobleAuth(u.email)}
+                        style={{
+                          padding: "5px 16px", borderRadius: "20px", border: "none", cursor: "pointer",
+                          fontSize: "12px", fontWeight: "600",
+                          background: perfil?.dobleAuth ? "#d1fae5" : "#f1f5f9",
+                          color: perfil?.dobleAuth ? "#065f46" : "#94a3b8"
+                        }}>
+                        {perfil?.dobleAuth ? "✓ Activo" : "Inactivo"}
+                      </button>
+                    </td>
+                    <td style={{ padding: "14px 16px" }}>
+                      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+                        {perfil?.modulos && Object.entries(perfil.modulos).map(([mod, activo]) => (
+                          <span key={mod} style={{
+                            padding: "3px 10px", borderRadius: "20px", fontSize: "12px",
+                            background: activo ? "#dbeafe" : "#f1f5f9",
+                            color: activo ? "#1e40af" : "#94a3b8",
+                            fontWeight: activo ? "600" : "normal"
+                          }}>
+                            {mod}
+                          </span>
+                        ))}
+                        {!perfil && <span style={{ color: "#94a3b8", fontSize: "13px" }}>Cargando...</span>}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );
 }
 
-export default Chatbot;
+export default Admin;

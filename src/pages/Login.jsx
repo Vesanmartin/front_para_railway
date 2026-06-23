@@ -5,49 +5,45 @@ import { login } from "../services/api";
 import "../styles/login.css";
 import logo from "../assets/logo.png";
 
+const GATEWAY_URL = "https://backparaprobarrailway-production.up.railway.app";
+
 function Login() {
-  const [email, setEmail]           = useState("");
-  const [password, setPassword]     = useState("");
-  const [error, setError]           = useState("");
+  const [email, setEmail]               = useState("");
+  const [password, setPassword]         = useState("");
+  const [error, setError]               = useState("");
   const [showCodeInput, setShowCodeInput] = useState(false);
-  const [code, setCode]             = useState("");
+  const [code, setCode]                 = useState("");
   const navigate = useNavigate();
 
-  // PASO 1: LOGIN "” valida credenciales y activa 2FA
   const handleLogin = async (e) => {
-  e.preventDefault();
-  try {
-    const data = await login(email, password);
-    if (data.twoFactor) {
-      alert("El código ha sido enviado a su correo");
-      setShowCodeInput(true);
-      return;
+    e.preventDefault();
+    try {
+      const data = await login(email, password);
+      if (data.twoFactor) {
+        alert("El código ha sido enviado a su correo");
+        setShowCodeInput(true);
+        return;
+      }
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("rol", data.rol);
+        navigate("/dashboard");
+      }
+    } catch (error) {
+      setError("Credenciales incorrectas");
     }
-    if (data.token) {
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("rol", data.rol);
-      navigate("/dashboard");
-    }
-  } catch (error) {
-    setError("Credenciales incorrectas");
-  }
-};
+  };
 
-  // PASO 2: VERIFICAR Cí“DIGO 2FA
   const verifyCode = async () => {
     try {
-      const response = await fetch(
-        "/api/auth/verify-code",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, code })
-        }
-      );
+      const response = await fetch(`${GATEWAY_URL}/api/auth/verify-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code })
+      });
       const data = await response.json();
 
       if (data.success) {
-        // Guardar token JWT para requests autenticados
         localStorage.setItem("token", data.token);
         localStorage.setItem("rol", data.rol);
         navigate("/dashboard");
@@ -82,20 +78,13 @@ function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button type="submit" className="button">
-          Ingresar
-        </button>
+        <button type="submit" className="button">Ingresar</button>
         <p
-  style={{
-    color: "#007bff",
-    cursor: "pointer",
-    marginTop: "10px",
-    textAlign: "center"
-  }}
-  onClick={() => navigate("/recuperar-password")}
->
-  Â¿Olvidaste tu contraseña?
-</p>
+          style={{ color: "#007bff", cursor: "pointer", marginTop: "10px", textAlign: "center" }}
+          onClick={() => navigate("/recuperar-password")}
+        >
+          ¿Olvidaste tu contraseña?
+        </p>
         {showCodeInput && (
           <div>
             <input
@@ -110,11 +99,10 @@ function Login() {
               Verificar Código
             </button>
           </div>
-          
         )}
       </form>
       <div className="footer">
-        Grupo Cordillera Â© 2026 | Cocq-Gallegos-San Martin-Vasquez
+        Grupo Cordillera © 2026 | Cocq-Gallegos-San Martin-Vasquez
       </div>
     </div>
   );
