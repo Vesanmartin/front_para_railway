@@ -13,13 +13,13 @@ function Login() {
   const [code, setCode]             = useState("");
   const navigate = useNavigate();
 
-  // PASO 1: LOGIN â€” valida credenciales y activa 2FA
+  // PASO 1: LOGIN "” valida credenciales y activa 2FA
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = await login(email, password);
       if (data.twoFactor) {
-        alert("El cÃ³digo ha sido enviado a su correo");
+        alert("El código ha sido enviado a su correo");
         setShowCodeInput(true);
         return;
       }
@@ -28,7 +28,7 @@ function Login() {
     }
   };
 
-  // PASO 2: VERIFICAR CÃ“DIGO 2FA
+  // PASO 2: VERIFICAR Cí“DIGO 2FA
   const verifyCode = async () => {
     try {
       const response = await fetch(
@@ -47,10 +47,10 @@ function Login() {
         localStorage.setItem("rol", data.rol);
         navigate("/dashboard");
       } else {
-        setError("CÃ³digo incorrecto");
+        setError("Código incorrecto");
       }
     } catch (error) {
-      setError("Error verificando cÃ³digo");
+      setError("Error verificando código");
     }
   };
 
@@ -72,7 +72,7 @@ function Login() {
         />
         <input
           type="password"
-          placeholder="ContraseÃ±a"
+          placeholder="Contraseña"
           className="input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -89,20 +89,20 @@ function Login() {
   }}
   onClick={() => navigate("/recuperar-password")}
 >
-  Â¿Olvidaste tu contraseÃ±a?
+  Â¿Olvidaste tu contraseña?
 </p>
         {showCodeInput && (
           <div>
             <input
               type="text"
-              placeholder="Ingrese cÃ³digo 2FA"
+              placeholder="Ingrese código 2FA"
               className="input"
               maxLength="6"
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
             <button type="button" className="button" onClick={verifyCode}>
-              Verificar CÃ³digo
+              Verificar Código
             </button>
           </div>
           

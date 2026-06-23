@@ -1,6 +1,6 @@
 ﻿// src/pages/Chatbot.jsx
 // Chatbot CORDI powered by Ollama llama3.2
-// Muestra grÃ¡ficos automÃ¡ticamente cuando la respuesta tiene datos numÃ©ricos
+// Muestra gráficos automáticamente cuando la respuesta tiene datos numéricos
 // Usa Recharts para las visualizaciones
 
 import gatoImg from "../assets/gatomeme.png";
@@ -12,10 +12,10 @@ import {
   PieChart, Pie, Cell, Legend
 } from "recharts";
 
-// Colores para los grÃ¡ficos
+// Colores para los gráficos
 const COLORES = ["#0077b6", "#00b4d8", "#48cae4", "#90e0ef", "#023e8a"];
 
-// Nombres de los meses para mostrar en los grÃ¡ficos
+// Nombres de los meses para mostrar en los gráficos
 const MESES = {
   1:"Ene", 2:"Feb", 3:"Mar", 4:"Abr", 5:"May", 6:"Jun",
   7:"Jul", 8:"Ago", 9:"Sep", 10:"Oct", 11:"Nov", 12:"Dic"
@@ -24,25 +24,25 @@ const MESES = {
 function Chatbot() {
   // Estado del chat
   const [mensajes, setMensajes] = useState([
-    { rol: "sistema", texto: "Hola, soy CORDI, el analista de Grupo Cordillera. PregÃºntame sobre ventas, KPIs o informes... si te atreves." }
+    { rol: "sistema", texto: "Hola, soy CORDI, el analista de Grupo Cordillera. Pregíºntame sobre ventas, KPIs o informes... si te atreves." }
   ]);
   const [pregunta, setPregunta]       = useState("");
   const [cargando, setCargando]       = useState(false);
 
-  // Estado para los grÃ¡ficos â€” guarda los datos del Ãºltimo mensaje
+  // Estado para los gráficos "” guarda los datos del íºltimo mensaje
   const [datosGrafico, setDatosGrafico] = useState(null);
 
-  // Tipo de grÃ¡fico activo (para el selector de pestaÃ±as)
+  // Tipo de gráfico activo (para el selector de pestañas)
   const [tipoGrafico, setTipoGrafico] = useState("ventas_mes");
 
   const finRef = useRef(null);
 
-  // Scroll automÃ¡tico al Ãºltimo mensaje
+  // Scroll automático al íºltimo mensaje
   useEffect(() => {
     finRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [mensajes]);
 
-  // FunciÃ³n para enviar la pregunta al backend
+  // Función para enviar la pregunta al backend
   const enviar = async () => {
     if (!pregunta.trim() || cargando) return;
 
@@ -85,7 +85,7 @@ function Chatbot() {
     }
   };
 
-  // Estilos de los mensajes segÃºn el rol
+  // Estilos de los mensajes segíºn el rol
   const estiloMensaje = (rol) => {
     if (rol === "usuario") return {
       alignSelf: "flex-end", background: "#0077b6", color: "white",
@@ -107,7 +107,7 @@ function Chatbot() {
   // Prepara los datos de ventas por mes para Recharts
   const dataVentasMes = (datosGrafico?.ventas_por_mes || [])
     .map(v => ({
-      periodo: `${MESES[v.mes]} ${v.aÃ±o}`,
+      periodo: `${MESES[v.mes]} ${v.año}`,
       ventas:  parseFloat(v.total_ventas)
     }))
     .reverse();
@@ -129,7 +129,7 @@ function Chatbot() {
   // Prepara los datos de compras por mes para Recharts
   const dataComprasMes = (datosGrafico?.compras_por_mes || [])
     .map(c => ({
-      periodo: `${MESES[c.mes]} ${c.aÃ±o}`,
+      periodo: `${MESES[c.mes]} ${c.año}`,
       compras: parseFloat(c.total_compras)
     }))
     .reverse();
@@ -146,7 +146,7 @@ function Chatbot() {
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
 
-      {/* Layout principal â€” chat + grÃ¡fico lado a lado */}
+      {/* Layout principal "” chat + gráfico lado a lado */}
       <div style={{
         padding: "40px",
         maxWidth: "1400px",
@@ -156,14 +156,14 @@ function Chatbot() {
         alignItems: "flex-start"
       }}>
 
-        {/* Panel izquierdo â€” Chat */}
+        {/* Panel izquierdo "” Chat */}
         <div style={{ flex: hayDatos ? "0 0 480px" : "1" }}>
           <h1 style={{ marginBottom: "5px" }}>Chatbot Cordillera</h1>
           <p style={{ color: "#666", marginBottom: "24px" }}>
             Asistente inteligente powered by <strong>Ollama llama3.2</strong> via Circuit Breaker
           </p>
 
-          {/* Ãrea de mensajes */}
+          {/* írea de mensajes */}
           <div style={{
             background: "#f8fafc", borderRadius: "12px", padding: "20px",
             height: "450px", overflowY: "auto", display: "flex",
@@ -229,7 +229,7 @@ function Chatbot() {
           </p>
         </div>
 
-        {/* Panel derecho â€” GrÃ¡ficos (solo aparece cuando hay datos) */}
+        {/* Panel derecho "” Gráficos (solo aparece cuando hay datos) */}
         {hayDatos && (
           <div style={{
             flex: 1,
@@ -240,10 +240,10 @@ function Chatbot() {
             minWidth: 0
           }}>
             <h3 style={{ marginBottom: "16px", color: "#333" }}>
-              ðŸ“Š VisualizaciÃ³n de datos
+              ðŸ“Š Visualización de datos
             </h3>
 
-            {/* PestaÃ±as para cambiar el tipo de grÃ¡fico */}
+            {/* Pestañas para cambiar el tipo de gráfico */}
             <div style={{ display: "flex", gap: "8px", marginBottom: "20px", flexWrap: "wrap" }}>
               {dataVentasMes.length > 0 && (
                 <button onClick={() => setTipoGrafico("ventas_mes")}
@@ -291,7 +291,7 @@ function Chatbot() {
               )}
             </div>
 
-            {/* GrÃ¡fico de ventas por mes â€” lÃ­nea */}
+            {/* Gráfico de ventas por mes "” lí­nea */}
             {tipoGrafico === "ventas_mes" && dataVentasMes.length > 0 && (
               <ResponsiveContainer width="100%" height={300}>
                 <LineChart data={dataVentasMes}>
@@ -304,7 +304,7 @@ function Chatbot() {
               </ResponsiveContainer>
             )}
 
-            {/* GrÃ¡fico de ventas por sucursal â€” torta */}
+            {/* Gráfico de ventas por sucursal "” torta */}
             {tipoGrafico === "sucursales" && dataSucursales.length > 0 && (
               <ResponsiveContainer width="100%" height={300}>
                 <PieChart>
@@ -321,7 +321,7 @@ function Chatbot() {
               </ResponsiveContainer>
             )}
 
-            {/* GrÃ¡fico de top productos â€” barras horizontales */}
+            {/* Gráfico de top productos "” barras horizontales */}
             {tipoGrafico === "productos" && dataProductos.length > 0 && (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={dataProductos} layout="vertical">
@@ -334,7 +334,7 @@ function Chatbot() {
               </ResponsiveContainer>
             )}
 
-            {/* GrÃ¡fico de compras por mes â€” barras */}
+            {/* Gráfico de compras por mes "” barras */}
             {tipoGrafico === "compras_mes" && dataComprasMes.length > 0 && (
               <ResponsiveContainer width="100%" height={300}>
                 <BarChart data={dataComprasMes}>

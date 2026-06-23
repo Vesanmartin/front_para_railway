@@ -1,20 +1,20 @@
 ﻿// src/pages/Importacion.jsx
 // Vista del operador para importar datos desde fuentes externas
-// Soporta importaciÃ³n automÃ¡tica (simulada) y manual via CSV
+// Soporta importación automática (simulada) y manual via CSV
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 
 const MODULOS = [
-  { id: "erp_transacciones",   nombre: "ERP â€” Transacciones",        icono: "ðŸ­", fuente: "ERP" },
-  { id: "rrhh_empleados",      nombre: "RRHH â€” Empleados",           icono: "ðŸ‘¤", fuente: "RRHH" },
-  { id: "rrhh_remuneraciones", nombre: "RRHH â€” Remuneraciones",      icono: "ðŸ’°", fuente: "RRHH" },
-  { id: "rrhh_asistencia",     nombre: "RRHH â€” Asistencia",          icono: "ðŸ“…", fuente: "RRHH" },
-  { id: "crm_terceros",        nombre: "CRM â€” Clientes/Proveedores", icono: "ðŸ‘¥", fuente: "CRM" },
-  { id: "crm_interacciones",   nombre: "CRM â€” Interacciones",        icono: "ðŸ’¬", fuente: "CRM" },
-  { id: "crm_procesos_venta",  nombre: "CRM â€” Procesos Venta",       icono: "ðŸ“Š", fuente: "CRM" },
-  { id: "pos_ventas",          nombre: "POS â€” Ventas",               icono: "ðŸ›’", fuente: "POS" },
-  { id: "analytics_visitas", nombre: "Analytics â€” Visitas Web", icono: "ðŸ“ˆ", fuente: "Analytics" }
+  { id: "erp_transacciones",   nombre: "ERP "” Transacciones",        icono: "ðŸ­", fuente: "ERP" },
+  { id: "rrhh_empleados",      nombre: "RRHH "” Empleados",           icono: "ðŸ‘¤", fuente: "RRHH" },
+  { id: "rrhh_remuneraciones", nombre: "RRHH "” Remuneraciones",      icono: "ðŸ’°", fuente: "RRHH" },
+  { id: "rrhh_asistencia",     nombre: "RRHH "” Asistencia",          icono: "ðŸ“…", fuente: "RRHH" },
+  { id: "crm_terceros",        nombre: "CRM "” Clientes/Proveedores", icono: "ðŸ‘¥", fuente: "CRM" },
+  { id: "crm_interacciones",   nombre: "CRM "” Interacciones",        icono: "ðŸ’¬", fuente: "CRM" },
+  { id: "crm_procesos_venta",  nombre: "CRM "” Procesos Venta",       icono: "ðŸ“Š", fuente: "CRM" },
+  { id: "pos_ventas",          nombre: "POS "” Ventas",               icono: "ðŸ›’", fuente: "POS" },
+  { id: "analytics_visitas", nombre: "Analytics "” Visitas Web", icono: "ðŸ“ˆ", fuente: "Analytics" }
 ];
 
 function Importacion() {
@@ -153,8 +153,8 @@ function Importacion() {
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
       <div style={{ padding: "40px" }}>
-        <h1 style={{ marginBottom: "5px" }}>ImportaciÃ³n de Datos</h1>
-        <p style={{ color: "#666", marginBottom: "30px" }}>IntegraciÃ³n con sistemas ERP, RRHH, CRM y POS</p>
+        <h1 style={{ marginBottom: "5px" }}>Importación de Datos</h1>
+        <p style={{ color: "#666", marginBottom: "30px" }}>Integración con sistemas ERP, RRHH, CRM y POS</p>
 
         {/* Tarjetas resumen */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
@@ -164,9 +164,9 @@ function Importacion() {
           <TarjetaResumen titulo="Total Importaciones" valor={historial.length} color="#7c3aed" />
         </div>
 
-        {/* Panel de importaciÃ³n */}
+        {/* Panel de importación */}
         <div style={{ background: "white", borderRadius: "12px", padding: "30px", marginBottom: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-          <h3 style={{ marginBottom: "20px" }}>Nueva ImportaciÃ³n</h3>
+          <h3 style={{ marginBottom: "20px" }}>Nueva Importación</h3>
 
           {/* Selector modo */}
           <div style={{ display: "flex", gap: "10px", marginBottom: "24px" }}>
@@ -184,12 +184,12 @@ function Importacion() {
                 background: modoImport === "auto" ? "#0077b6" : "#f1f5f9",
                 color: modoImport === "auto" ? "white" : "#555", fontWeight: "600"
               }}>
-              ImportaciÃ³n automÃ¡tica
+              Importación automática
             </button>
           </div>
 
-          {/* Selector de mÃ³dulo */}
-          <p style={{ color: "#555", marginBottom: "12px", fontWeight: "500" }}>Seleccionar mÃ³dulo:</p>
+          {/* Selector de módulo */}
+          <p style={{ color: "#555", marginBottom: "12px", fontWeight: "500" }}>Seleccionar módulo:</p>
           <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "24px" }}>
             {MODULOS.map(m => (
               <div key={m.id} onClick={() => setModulo(m.id)}
@@ -226,7 +226,7 @@ function Importacion() {
             </div>
           )}
 
-          {/* Modo automÃ¡tico */}
+          {/* Modo automático */}
           {modoImport === "auto" && (
   <div style={{ background: "#f8fafc", borderRadius: "8px", padding: "20px", marginBottom: "16px" }}>
     <p style={{ color: "#555", fontSize: "14px", marginBottom: "16px" }}>
@@ -247,7 +247,7 @@ function Importacion() {
       ))}
     </div>
     <p style={{ color: "#94a3b8", fontSize: "12px", marginTop: "8px" }}>
-      Modulo seleccionado: <strong>{MODULOS.find(m => m.id === modulo)?.nombre}</strong> â€” frecuencia: <strong>{frecuencia}</strong>
+      Modulo seleccionado: <strong>{MODULOS.find(m => m.id === modulo)?.nombre}</strong> "” frecuencia: <strong>{frecuencia}</strong>
     </p>
   </div>
 )}
@@ -281,7 +281,7 @@ function Importacion() {
               color: "white", border: "none", borderRadius: "8px",
               cursor: cargando ? "not-allowed" : "pointer", fontSize: "15px", fontWeight: "600"
             }}>
-            {cargando ? "â³ Importando..." : modoImport === "csv" ? "â–¶ Importar CSV" : "Importar AutomÃ¡tico"}
+            {cargando ? "â³ Importando..." : modoImport === "csv" ? "â–¶ Importar CSV" : "Importar Automático"}
           </button>
         </div>
 

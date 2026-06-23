@@ -42,7 +42,7 @@ return (
         textAlign: "center"
       }}
     >
-      <h2>Recuperar ContraseÃ±a</h2>
+      <h2>Recuperar Contraseña</h2>
 
       <input
         type="email"

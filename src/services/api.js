@@ -2,7 +2,7 @@
 const BFF_URL     = import.meta.env.VITE_API_URL || 'PLACEHOLDER';
 const GATEWAY_URL = import.meta.env.VITE_API_URL || '';
 
-// AutenticaciÃ³n â€” va directo al gateway
+// Autenticación "” va directo al gateway
 export const login = async (email, password) => {
   const respuesta = await fetch(`${GATEWAY_URL}/api/auth/login`, {
     method: 'POST',

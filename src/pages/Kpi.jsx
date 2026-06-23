@@ -1,6 +1,6 @@
 ﻿// src/pages/Kpi.jsx
 // Dashboard de KPIs con datos reales desde kpi-service
-// Usa Factory Method del backend para calcular mÃ©tricas desde transacciones_erp
+// Usa Factory Method del backend para calcular métricas desde transacciones_erp
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -54,7 +54,7 @@ function Kpi() {
       <div style={{ padding: "40px" }}>
         <h1 style={{ marginBottom: "5px" }}>Indicadores KPI</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
-          Datos reales de los dos Ãºltimos meses (cargados en sistema) vÃ­a Factory Method
+          Datos reales de los dos íºltimos meses (cargados en sistema) ví­a Factory Method
         </p>
 
         {/* Tarjetas resumen */}
@@ -81,12 +81,12 @@ function Kpi() {
           />
         </div>
 
-        {/* GrÃ¡ficos */}
+        {/* Gráficos */}
         <div style={{ display: "flex", gap: "20px", flexWrap: "wrap" }}>
 
-          {/* GrÃ¡fico de barras â€” ventas por categorÃ­a */}
+          {/* Gráfico de barras "” ventas por categorí­a */}
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 2, minWidth: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas por CategorÃ­a</h3>
+            <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas por Categorí­a</h3>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={dataCategorias}>
                 <CartesianGrid strokeDasharray="3 3" />
@@ -98,9 +98,9 @@ function Kpi() {
             </ResponsiveContainer>
           </div>
 
-          {/* GrÃ¡fico de dona â€” distribuciÃ³n por cantidad */}
+          {/* Gráfico de dona "” distribución por cantidad */}
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 1, minWidth: "280px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "20px", color: "#333" }}>DistribuciÃ³n por CategorÃ­a</h3>
+            <h3 style={{ marginBottom: "20px", color: "#333" }}>Distribución por Categorí­a</h3>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
                 <Pie data={dataPie} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={90} label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
@@ -114,13 +114,13 @@ function Kpi() {
           </div>
         </div>
 
-        {/* Tabla top categorÃ­as */}
+        {/* Tabla top categorí­as */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginTop: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-          <h3 style={{ marginBottom: "16px", color: "#333" }}>Top CategorÃ­as</h3>
+          <h3 style={{ marginBottom: "16px", color: "#333" }}>Top Categorí­as</h3>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ background: "#f8fafc" }}>
-                <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>CategorÃ­a</th>
+                <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Categorí­a</th>
                 <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Transacciones</th>
                 <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Total Ventas</th>
               </tr>

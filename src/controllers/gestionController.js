@@ -7,7 +7,7 @@ const getGestion = (req, res) => {
     res.json(proyectos);
 };
 
-//  POST â†’ crear proyecto con validaciÃ³n
+//  POST â†’ crear proyecto con validación
 const crearGestion = (req, res) => {
 
     //  Validar que venga el campo "nombre"
@@ -17,7 +17,7 @@ const crearGestion = (req, res) => {
         });
     }
 
-    //  Crear objeto con ID automÃ¡tico
+    //  Crear objeto con ID automático
     const nuevo = {
         id: proyectos.length + 1,
         nombre: req.body.nombre
@@ -33,11 +33,11 @@ const crearGestion = (req, res) => {
     });
 };
 
-//  PUT â†’ actualizar un proyecto por id (posiciÃ³n en el arreglo)
-//  PUT â†’ actualizar proyecto con validaciÃ³n
+//  PUT â†’ actualizar un proyecto por id (posición en el arreglo)
+//  PUT â†’ actualizar proyecto con validación
 const actualizarGestion = (req, res) => {
 
-    const id = parseInt(req.params.id); // Convertir a nÃºmero
+    const id = parseInt(req.params.id); // Convertir a níºmero
 
     //  Validar que el proyecto exista
     if (!proyectos[id - 1]) {
@@ -73,7 +73,7 @@ const eliminarGestion = (req, res) => {
         return res.status(404).json({ mensaje: "No encontrado" });
     }
 
-    // Elimina 1 elemento desde esa posiciÃ³n
+    // Elimina 1 elemento desde esa posición
     proyectos.splice(id, 1);
 
     res.json({ mensaje: "Proyecto eliminado" });
