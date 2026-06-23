@@ -1,4 +1,4 @@
-// src/pages/Dashboard.jsx
+﻿// src/pages/Dashboard.jsx
 import { useEffect, useState } from "react";
 import Navbar from "../components/Navbar";
 import { useNavigate } from "react-router-dom";
@@ -27,7 +27,7 @@ function Dashboard() {
 
   const cargarResumen = async () => {
   try {
-    const res = await fetch("http://localhost:3004/api/informes/resumen-sistema");
+    const res = await fetch("PLACEHOLDER/api/informes/resumen-sistema");
     const data = await res.json();
     if (data.success) setResumen(data);
   } catch (err) {
@@ -53,11 +53,11 @@ function Dashboard() {
       <div style={{ padding: "40px" }}>
         <h1 style={{ marginBottom: "5px" }}>Grupo Cordiller</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
-          Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} — Rol: <strong>{rol}</strong>
+          Bienvenido{usuario?.email ? `, ${usuario.email}` : ""} â€” Rol: <strong>{rol}</strong>
         </p>
 
         
-        {/* Tarjetas métricas 
+        {/* Tarjetas mÃ©tricas 
         {resumen && (
           <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
             <Tarjeta titulo="Usuarios del Sistema" valor={resumen.totalUsuarios} color="#0077b6" />
@@ -67,10 +67,10 @@ function Dashboard() {
         )}*/}
         
 
-        {/* Tabla últimas importaciones 
+        {/* Tabla Ãºltimas importaciones 
         {resumen && (
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "30px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "16px", color: "#333" }}>Últimas Importaciones</h3>
+            <h3 style={{ marginBottom: "16px", color: "#333" }}>Ãšltimas Importaciones</h3>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ background: "#f8fafc" }}>
@@ -115,8 +115,8 @@ function Dashboard() {
 
   {(rol === "admin" || rol === "supersaiyajin") && (
     <TarjetaAcceso
-      titulo="Administración"
-      descripcion="Gestión de usuarios y roles"
+      titulo="AdministraciÃ³n"
+      descripcion="GestiÃ³n de usuarios y roles"
       color="#023e8a"
       url="/admin"
     />
@@ -158,8 +158,8 @@ function Dashboard() {
   {(rol === "admin" ||
     rol === "supersaiyajin") && (
     <TarjetaAcceso
-      titulo="Gestión"
-      descripcion="Gestión empresarial"
+      titulo="GestiÃ³n"
+      descripcion="GestiÃ³n empresarial"
       color="#48cae4"
       url="/gestion"
     />

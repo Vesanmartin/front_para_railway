@@ -1,8 +1,8 @@
-// src/pages/Admin.jsx
+﻿// src/pages/Admin.jsx
 // Panel exclusivo para el administrador del sistema
-// Permite gestionar usuarios, roles, perfiles y doble autenticación
-// PATRÓN: Strategy — los permisos de cada usuario se obtienen desde
-// el auth-service según su rol (EstrategiaAdmin, EstrategiaGerente, EstrategiaOperador)
+// Permite gestionar usuarios, roles, perfiles y doble autenticaciÃ³n
+// PATRÃ“N: Strategy â€” los permisos de cada usuario se obtienen desde
+// el auth-service segÃºn su rol (EstrategiaAdmin, EstrategiaGerente, EstrategiaOperador)
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -24,7 +24,7 @@ function Admin() {
 
   const cargarUsuarios = async () => {
     try {
-      const respuesta = await fetch("http://localhost:3001/api/auth/users");
+      const respuesta = await fetch("PLACEHOLDER/api/auth/users");
       const data = await respuesta.json();
       if (Array.isArray(data)) {
         setUsuarios(data);
@@ -38,10 +38,10 @@ function Admin() {
 
   // Strategy Pattern
   // Llama al endpoint del auth-service que usa ContextoPermisos
-  // para obtener los módulos permitidos según el rol del usuario
+  // para obtener los mÃ³dulos permitidos segÃºn el rol del usuario
   const cargarPermisos = async (email, rol) => {
     try {
-      const respuesta = await fetch(`http://localhost:3001/api/auth/permisos?rol=${rol}`);
+      const respuesta = await fetch(`PLACEHOLDER/api/auth/permisos?rol=${rol}`);
       const data = await respuesta.json();
       setPerfiles(prev => ({
         ...prev,
@@ -64,7 +64,7 @@ function Admin() {
     }
     setCargando(true);
     try {
-      const respuesta = await fetch("http://localhost:3001/api/auth/register", {
+      const respuesta = await fetch("PLACEHOLDER/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email: nuevoUsuario.email, password: nuevoUsuario.password })
@@ -72,12 +72,12 @@ function Admin() {
       const data = await respuesta.json();
       if (respuesta.ok) {
         setMensaje({ texto: `Usuario ${nuevoUsuario.email} creado correctamente`, tipo: "exito" });
-        // Asigna el rol elegido al usuario recién creado
-        const dataUsuarios = await fetch("http://localhost:3001/api/auth/users");
+        // Asigna el rol elegido al usuario reciÃ©n creado
+        const dataUsuarios = await fetch("PLACEHOLDER/api/auth/users");
         const listaUsuarios = await dataUsuarios.json();
         const usuarioNuevo = listaUsuarios.find(u => u.email === nuevoUsuario.email);
         if (usuarioNuevo) {
-          await fetch(`http://localhost:3001/api/auth/usuarios/${usuarioNuevo.id}/rol`, {
+          await fetch(`PLACEHOLDER/api/auth/usuarios/${usuarioNuevo.id}/rol`, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ rol: nuevoUsuario.rol })
@@ -96,10 +96,10 @@ function Admin() {
   };
 
   // Cambiar rol en BD via PUT y recargar permisos desde Strategy
-  // Al cambiar el selector, actualiza en MySQL y recarga los módulos
+  // Al cambiar el selector, actualiza en MySQL y recarga los mÃ³dulos
   const cambiarRol = async (id, email, nuevoRol) => {
     try {
-      const respuesta = await fetch(`http://localhost:3001/api/auth/usuarios/${id}/rol`, {
+      const respuesta = await fetch(`PLACEHOLDER/api/auth/usuarios/${id}/rol`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ rol: nuevoRol })
@@ -116,8 +116,8 @@ function Admin() {
     }
   };
 
-  // Toggle doble autenticación (simulado)
-  // En producción enviaría un código al email del usuario
+  // Toggle doble autenticaciÃ³n (simulado)
+  // En producciÃ³n enviarÃ­a un cÃ³digo al email del usuario
   const toggleDobleAuth = (email) => {
     setPerfiles(prev => ({
       ...prev,
@@ -129,9 +129,9 @@ function Admin() {
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
       <div style={{ padding: "40px" }}>
-        <h1 style={{ marginBottom: "5px" }}>Panel de Administración</h1>
+        <h1 style={{ marginBottom: "5px" }}>Panel de AdministraciÃ³n</h1>
         <p style={{ color: "#666", marginBottom: "30px" }}>
-          Gestión de usuarios, roles y permisos — Solo accesible para administradores
+          GestiÃ³n de usuarios, roles y permisos â€” Solo accesible para administradores
         </p>
 
         {/* Formulario crear usuario */}
@@ -144,7 +144,7 @@ function Admin() {
             <input placeholder="Password" type="password" value={nuevoUsuario.password}
               onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, password: e.target.value })}
               style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ddd", flex: 2 }} />
-            {/* Selector de rol — el nuevo usuario se crea con este rol en la BD */}
+            {/* Selector de rol â€” el nuevo usuario se crea con este rol en la BD */}
             <select value={nuevoUsuario.rol}
               onChange={(e) => setNuevoUsuario({ ...nuevoUsuario, rol: e.target.value })}
               style={{ padding: "10px 14px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }}>
@@ -173,7 +173,7 @@ function Admin() {
           <div style={{ padding: "20px 24px", borderBottom: "1px solid #f1f5f9" }}>
             <h3 style={{ margin: 0 }}>Usuarios del sistema</h3>
             <p style={{ color: "#666", fontSize: "13px", margin: "4px 0 0" }}>
-              Los módulos se asignan automáticamente según el rol via Strategy Pattern
+              Los mÃ³dulos se asignan automÃ¡ticamente segÃºn el rol via Strategy Pattern
             </p>
           </div>
           <table style={{ width: "100%", borderCollapse: "collapse" }}>
@@ -182,7 +182,7 @@ function Admin() {
                 <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Email</th>
                 <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Rol</th>
                 <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Doble Auth</th>
-                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>Módulos permitidos</th>
+                <th style={{ padding: "12px 16px", textAlign: "left", color: "#555" }}>MÃ³dulos permitidos</th>
               </tr>
             </thead>
             <tbody>
@@ -195,7 +195,7 @@ function Admin() {
                   <tr key={i} style={{ borderTop: "1px solid #f1f5f9" }}>
                     <td style={{ padding: "14px 16px", fontWeight: "500" }}>{u.email}</td>
 
-                    {/* Selector rol — al cambiar actualiza en BD y recarga Strategy */}
+                    {/* Selector rol â€” al cambiar actualiza en BD y recarga Strategy */}
                     <td style={{ padding: "14px 16px" }}>
                       <select
                         value={perfil?.rol || u.rol || "operador"}
@@ -207,8 +207,8 @@ function Admin() {
                       </select>
                     </td>
 
-                    {/* Toggle doble autenticación simulado
-                        En producción: activa envío de código por email */}
+                    {/* Toggle doble autenticaciÃ³n simulado
+                        En producciÃ³n: activa envÃ­o de cÃ³digo por email */}
                     <td style={{ padding: "14px 16px" }}>
                       <button onClick={() => toggleDobleAuth(u.email)}
                         style={{
@@ -217,11 +217,11 @@ function Admin() {
                           background: perfil?.dobleAuth ? "#d1fae5" : "#f1f5f9",
                           color: perfil?.dobleAuth ? "#065f46" : "#94a3b8"
                         }}>
-                        {perfil?.dobleAuth ? "✓ Activo" : "Inactivo"}
+                        {perfil?.dobleAuth ? "âœ“ Activo" : "Inactivo"}
                       </button>
                     </td>
 
-                    {/* Módulos — cargados desde Strategy Pattern según rol
+                    {/* MÃ³dulos â€” cargados desde Strategy Pattern segÃºn rol
                         Azul = tiene acceso, gris = sin acceso */}
                     <td style={{ padding: "14px 16px" }}>
                       <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>

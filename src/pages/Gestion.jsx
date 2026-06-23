@@ -1,5 +1,5 @@
-// src/pages/Gestion.jsx
-// Vista del administrador — panel de gestión del sistema
+﻿// src/pages/Gestion.jsx
+// Vista del administrador â€” panel de gestiÃ³n del sistema
 
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
@@ -10,10 +10,10 @@ function Gestion() {
   const [usuarios, setUsuarios] = useState([]);
   const [nueva, setNueva] = useState({ nombre: "", descripcion: "", direccion: "", region: "" });
 
-  // Estados para el módulo Serverless 
-  // reporteResultado: Guarda la respuesta que devuelve la función Lambda
-  // reporteCargando: Controla el estado del botón mientras espera la respuesta
-  // reporteForm: Los parámetros que el usuario elige antes de disparar la Lambda
+  // Estados para el mÃ³dulo Serverless 
+  // reporteResultado: Guarda la respuesta que devuelve la funciÃ³n Lambda
+  // reporteCargando: Controla el estado del botÃ³n mientras espera la respuesta
+  // reporteForm: Los parÃ¡metros que el usuario elige antes de disparar la Lambda
   const [reporteResultado, setReporteResultado] = useState(null);
   const [reporteCargando, setReporteCargando] = useState(false);
   const [reporteForm, setReporteForm] = useState({ sucursal: "Santiago Centro", tipo: "ventas", periodo: "2026-05" });
@@ -21,16 +21,16 @@ function Gestion() {
   const token = localStorage.getItem("token");
 
   // Datos simulados
-  // En producción estos datos vendrían del auth-service (puerto 3001)
-  // Se reemplazarían por un fetch real cuando el endpoint esté disponible
+  // En producciÃ³n estos datos vendrÃ­an del auth-service (puerto 3001)
+  // Se reemplazarÃ­an por un fetch real cuando el endpoint estÃ© disponible
   const usuariosConectados = [
     { id: 1, email: "gerente@cordillera.cl", rol: "gerente", sucursal: "Santiago Centro", conexion: "Hace 5 min", estado: "activo" },
-    { id: 2, email: "operador1@cordillera.cl", rol: "operador", sucursal: "Valparaíso", conexion: "Hace 12 min", estado: "activo" },
-    { id: 3, email: "operador2@cordillera.cl", rol: "operador", sucursal: "Concepción", conexion: "Hace 1 hora", estado: "inactivo" },
+    { id: 2, email: "operador1@cordillera.cl", rol: "operador", sucursal: "ValparaÃ­so", conexion: "Hace 12 min", estado: "activo" },
+    { id: 3, email: "operador2@cordillera.cl", rol: "operador", sucursal: "ConcepciÃ³n", conexion: "Hace 1 hora", estado: "inactivo" },
     { id: 4, email: "admin@test.cl", rol: "admin", sucursal: "Casa Matriz", conexion: "Ahora", estado: "activo" },
   ];
 
-  // En producción vendría de un microservicio de auditoría o logs
+  // En producciÃ³n vendrÃ­a de un microservicio de auditorÃ­a o logs
   const archivosDescargados = [
     { id: 1, nombre: "informe_kpi_abril.pdf", usuario: "gerente@cordillera.cl", fecha: "2026-05-03 09:15", tamanio: "245 KB" },
     { id: 2, nombre: "reporte_ventas_q1.xlsx", usuario: "gerente@cordillera.cl", fecha: "2026-05-02 16:30", tamanio: "1.2 MB" },
@@ -38,11 +38,11 @@ function Gestion() {
     { id: 4, nombre: "informe_mensual.pdf", usuario: "gerente@cordillera.cl", fecha: "2026-05-01 14:20", tamanio: "310 KB" },
   ];
 
-  // Sucursales (sí vienen de la BD real) (gestion-service puerto 3003)
+  // Sucursales (sÃ­ vienen de la BD real) (gestion-service puerto 3003)
   useEffect(() => {
     const cargar = async () => {
       try {
-        const respuesta = await fetch("http://localhost:3003/api/sucursales");
+        const respuesta = await fetch("PLACEHOLDER/api/sucursales");
         const data = await respuesta.json();
         if (Array.isArray(data)) setSucursales(data);
       } catch (err) {
@@ -56,7 +56,7 @@ function Gestion() {
 useEffect(() => {
   const cargarUsuarios = async () => {
     try {
-      const respuesta = await fetch("http://localhost:3001/api/auth/users", {
+      const respuesta = await fetch("PLACEHOLDER/api/auth/users", {
         headers: { "Authorization": `Bearer ${token}` }
       });
       const data = await respuesta.json();
@@ -72,7 +72,7 @@ useEffect(() => {
 
   const crearSucursal = async () => {
     try {
-      await fetch("http://localhost:3003/api/gestion/gestion", {
+      await fetch("PLACEHOLDER/api/gestion/gestion", {
         method: "POST",
         headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
         body: JSON.stringify({ ...nueva, estado: "activo" })
@@ -85,7 +85,7 @@ useEffect(() => {
 
   const eliminarSucursal = async (id) => {
     try {
-      await fetch(`http://localhost:3003/api/gestion/gestion/${id}`, {
+      await fetch(`PLACEHOLDER/api/gestion/gestion/${id}`, {
         method: "DELETE",
         headers: { "Authorization": `Bearer ${token}` }
       });
@@ -99,7 +99,7 @@ useEffect(() => {
 // Elimina un usuario llamando al auth-service
 const eliminarUsuario = async (id) => {
   try {
-    await fetch(`http://localhost:3001/api/auth/usuarios/${id}`, {
+    await fetch(`PLACEHOLDER/api/auth/usuarios/${id}`, {
       method: "DELETE",
       headers: { "Authorization": `Bearer ${token}` }
     });
@@ -110,26 +110,26 @@ const eliminarUsuario = async (id) => {
   }
 };
 
-  // FUNCIÓN LAMBDA 1: Reporte bajo demanda
-  // Concepto Serverless: esta función NO corre en un servidor permanente.
+  // FUNCIÃ“N LAMBDA 1: Reporte bajo demanda
+  // Concepto Serverless: esta funciÃ³n NO corre en un servidor permanente.
   // En AWS, se despliega como Lambda y solo se ejecuta cuando alguien la llama.
   // Localmente la simulamos con serverless-offline en puerto 4000.
   //
   // Flujo:
-  // 1. El usuario elige sucursal, tipo y período en el formulario
-  // 2. El frontend hace POST a /dev/reportes/generar con esos parámetros
-  // 3. La función Lambda recibe el eventO, lo procesa y devuelve el reporte
+  // 1. El usuario elige sucursal, tipo y perÃ­odo en el formulario
+  // 2. El frontend hace POST a /dev/reportes/generar con esos parÃ¡metros
+  // 3. La funciÃ³n Lambda recibe el eventO, lo procesa y devuelve el reporte
   // 4. El frontend muestra el resultado en tarjetas
   //
-  // En producción: consultaría el kpi-service para obtener datos reales de BD
+  // En producciÃ³n: consultarÃ­a el kpi-service para obtener datos reales de BD
   const generarReporte = async () => {
     setReporteCargando(true);
     setReporteResultado(null);
     try {
-      const respuesta = await fetch("http://localhost:4000/dev/reportes/generar", {
+      const respuesta = await fetch("PLACEHOLDER/dev/reportes/generar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(reporteForm) // Envía sucursal, tipo y periodo
+        body: JSON.stringify(reporteForm) // EnvÃ­a sucursal, tipo y periodo
       });
       const data = await respuesta.json();
       if (data.success) setReporteResultado(data.reporte);
@@ -140,19 +140,19 @@ const eliminarUsuario = async (id) => {
     }
   };
 
-  // FUNCIÓN LAMBDA 2: Reporte mensual automático
-  // Concepto Serverless: en AWS esta función se dispararía con un schedule (cron).
+  // FUNCIÃ“N LAMBDA 2: Reporte mensual automÃ¡tico
+  // Concepto Serverless: en AWS esta funciÃ³n se dispararÃ­a con un schedule (cron).
   // Ejemplo: "todos los lunes a las 8am genera reportes de todas las sucursales"
   // No necesita que nadie la llame manualmente( se ejecuta sola).
   //
-  // Localmente la simulamos con un botón que hace GET a /dev/reportes/mensual.
-  // La función genera reportes para las 4 sucursales en paralelo
+  // Localmente la simulamos con un botÃ³n que hace GET a /dev/reportes/mensual.
+  // La funciÃ³n genera reportes para las 4 sucursales en paralelo
   // y devuelve un resumen consolidado.
   const reporteMensual = async () => {
     setReporteCargando(true);
     setReporteResultado(null);
     try {
-      const respuesta = await fetch("http://localhost:4000/dev/reportes/mensual");
+      const respuesta = await fetch("PLACEHOLDER/dev/reportes/mensual");
       const data = await respuesta.json();
       if (data.success) setReporteResultado(data);
     } catch (err) {
@@ -195,8 +195,8 @@ const eliminarUsuario = async (id) => {
     <div style={{ background: "#f4f6f9", minHeight: "100vh" }}>
       <Navbar />
       <div style={{ padding: "40px" }}>
-        <h1 style={{ marginBottom: "5px" }}>Panel de Administración</h1>
-        <p style={{ color: "#666", marginBottom: "30px" }}>Gestión del sistema Grupo Cordillera</p>
+        <h1 style={{ marginBottom: "5px" }}>Panel de AdministraciÃ³n</h1>
+        <p style={{ color: "#666", marginBottom: "30px" }}>GestiÃ³n del sistema Grupo Cordillera</p>
 
         <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
           <TarjetaResumen titulo="Usuarios Activos" valor={usuariosConectados.filter(u => u.estado === "activo").length} color="#0077b6" />
@@ -215,7 +215,7 @@ const eliminarUsuario = async (id) => {
 
           <div style={{ padding: "20px" }}>
 
-            {/* PESTAÑA USUARIOS */}
+            {/* PESTAÃ‘A USUARIOS */}
             {pestana === "usuarios" && (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -247,7 +247,7 @@ const eliminarUsuario = async (id) => {
          </table>
                 )}
 
-            {/* PESTAÑA ARCHIVOS */}
+            {/* PESTAÃ‘A ARCHIVOS */}
             {pestana === "archivos" && (
               <table style={{ width: "100%", borderCollapse: "collapse" }}>
                 <thead>
@@ -255,13 +255,13 @@ const eliminarUsuario = async (id) => {
                     <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Archivo</th>
                     <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Usuario</th>
                     <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Fecha</th>
-                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Tamaño</th>
+                    <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>TamaÃ±o</th>
                   </tr>
                 </thead>
                 <tbody>
                   {archivosDescargados.map(a => (
                     <tr key={a.id} style={{ borderTop: "1px solid #f1f5f9" }}>
-                      <td style={{ padding: "12px" }}>📄 {a.nombre}</td>
+                      <td style={{ padding: "12px" }}>ðŸ“„ {a.nombre}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.usuario}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.fecha}</td>
                       <td style={{ padding: "12px", color: "#666" }}>{a.tamanio}</td>
@@ -271,20 +271,20 @@ const eliminarUsuario = async (id) => {
               </table>
             )}
 
-            {/* PESTAÑA SUCURSALES */}
+            {/* PESTAÃ‘A SUCURSALES */}
             {pestana === "sucursales" && (
               <div>
                 <div style={{ display: "flex", gap: "10px", marginBottom: "20px", flexWrap: "wrap" }}>
                   <input placeholder="Nombre" value={nueva.nombre}
                     onChange={(e) => setNueva({ ...nueva, nombre: e.target.value })}
                     style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }} />
-                  <input placeholder="Descripción" value={nueva.descripcion}
+                  <input placeholder="DescripciÃ³n" value={nueva.descripcion}
                     onChange={(e) => setNueva({ ...nueva, descripcion: e.target.value })}
                     style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }} />
-                  <input placeholder="Dirección" value={nueva.direccion}
+                  <input placeholder="DirecciÃ³n" value={nueva.direccion}
                     onChange={(e) => setNueva({ ...nueva, direccion: e.target.value })}
                     style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }} />
-                  <input placeholder="Región" value={nueva.region}
+                  <input placeholder="RegiÃ³n" value={nueva.region}
                     onChange={(e) => setNueva({ ...nueva, region: e.target.value })}
                     style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }} />
                   <button onClick={crearSucursal}
@@ -296,9 +296,9 @@ const eliminarUsuario = async (id) => {
                   <thead>
                     <tr style={{ background: "#f8fafc" }}>
                       <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Nombre</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Descripción</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Dirección</th>
-                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Región</th>
+                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>DescripciÃ³n</th>
+                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>DirecciÃ³n</th>
+                      <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>RegiÃ³n</th>
                       <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Estado</th>
                       <th style={{ padding: "12px", textAlign: "left", color: "#555" }}>Acciones</th>
                     </tr>
@@ -327,11 +327,11 @@ const eliminarUsuario = async (id) => {
               </div>
             )}
 
-            {/* PESTAÑA REPORTES LAMBDA
-                Aquí se demuestran las funciones Serverless del proyecto.
+            {/* PESTAÃ‘A REPORTES LAMBDA
+                AquÃ­ se demuestran las funciones Serverless del proyecto.
                 El frontend se comunica con serverless-offline (puerto 4000)
                 que simula el entorno AWS Lambda localmente.
-                Cada botón dispara una función Lambda diferente. */}
+                Cada botÃ³n dispara una funciÃ³n Lambda diferente. */}
             {pestana === "reportes" && (
               <div>
                 <p style={{ color: "#555", marginBottom: "20px", fontSize: "14px" }}>
@@ -339,38 +339,38 @@ const eliminarUsuario = async (id) => {
                   En produccion estas funciones consultarian el <strong>kpi-service</strong>.
                 </p>
 
-                {/* Formulario — el usuario elige los parámetros antes de llamar a la Lambda */}
+                {/* Formulario â€” el usuario elige los parÃ¡metros antes de llamar a la Lambda */}
                 <div style={{ background: "#f8fafc", borderRadius: "10px", padding: "20px", marginBottom: "20px" }}>
                   <h4 style={{ marginBottom: "16px", color: "#333" }}>Reporte bajo demanda</h4>
                   <div style={{ display: "flex", gap: "10px", flexWrap: "wrap", marginBottom: "16px" }}>
-                    {/* Parámetro 1: sucursal — se envía al body de la Lambda */}
+                    {/* ParÃ¡metro 1: sucursal â€” se envÃ­a al body de la Lambda */}
                     <select value={reporteForm.sucursal} onChange={(e) => setReporteForm({ ...reporteForm, sucursal: e.target.value })}
                       style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }}>
                       <option>Santiago Centro</option>
                       <option>Providencia</option>
-                      <option>Maipú</option>
+                      <option>MaipÃº</option>
                       <option>Las Condes</option>
                     </select>
-                    {/* Parámetro 2: tipo de reporte */}
+                    {/* ParÃ¡metro 2: tipo de reporte */}
                     <select value={reporteForm.tipo} onChange={(e) => setReporteForm({ ...reporteForm, tipo: e.target.value })}
                       style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }}>
                       <option value="ventas">Ventas</option>
                       <option value="transacciones">Transacciones</option>
                       <option value="kpi">KPI</option>
                     </select>
-                    {/* Parámetro 3: período del reporte */}
+                    {/* ParÃ¡metro 3: perÃ­odo del reporte */}
                     <input type="month" value={reporteForm.periodo}
                       onChange={(e) => setReporteForm({ ...reporteForm, periodo: e.target.value })}
                       style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", flex: 1 }} />
                   </div>
                   <div style={{ display: "flex", gap: "10px" }}>
-                    {/* Botón 1: dispara Lambda generarReporte — POST /dev/reportes/generar */}
+                    {/* BotÃ³n 1: dispara Lambda generarReporte â€” POST /dev/reportes/generar */}
                     <button onClick={generarReporte} disabled={reporteCargando}
                       style={{ padding: "10px 24px", background: reporteCargando ? "#94a3b8" : "#0077b6", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
                       {reporteCargando ? "Generando..." : "Generar Reporte"}
                     </button>
-                    {/* Botón 2: dispara Lambda reporteMensual — GET /dev/reportes/mensual
-                        En AWS esto se ejecutaría automáticamente con un cron schedule */}
+                    {/* BotÃ³n 2: dispara Lambda reporteMensual â€” GET /dev/reportes/mensual
+                        En AWS esto se ejecutarÃ­a automÃ¡ticamente con un cron schedule */}
                     <button onClick={reporteMensual} disabled={reporteCargando}
                       style={{ padding: "10px 24px", background: reporteCargando ? "#94a3b8" : "#7c3aed", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", fontWeight: "600" }}>
                       {reporteCargando ? "Generando..." : "Reporte Mensual Todas las Sucursales"}
@@ -378,19 +378,19 @@ const eliminarUsuario = async (id) => {
                   </div>
                 </div>
 
-                {/* Resultado de la Lambda — se muestra cuando reporteResultado tiene datos */}
+                {/* Resultado de la Lambda â€” se muestra cuando reporteResultado tiene datos */}
                 {reporteResultado && (
                   <div style={{ background: "#d1fae5", borderRadius: "10px", padding: "20px" }}>
                     <h4 style={{ color: "#065f46", marginBottom: "4px" }}>Reporte generado por Lambda</h4>
                     <p style={{ color: "#065f46", fontSize: "12px", marginBottom: "16px" }}>
-                      Simulacion — en produccion esta funcion Lambda consultaria el kpi-service
+                      Simulacion â€” en produccion esta funcion Lambda consultaria el kpi-service
                     </p>
 
-                    {/* Resultado de generarReporte: un reporte individual con métricas */}
+                    {/* Resultado de generarReporte: un reporte individual con mÃ©tricas */}
                     {reporteResultado.id && (
                       <div>
                         <p style={{ color: "#065f46", marginBottom: "12px" }}>
-                          <strong>{reporteResultado.id}</strong> — {reporteResultado.sucursal} — {reporteResultado.periodo}
+                          <strong>{reporteResultado.id}</strong> â€” {reporteResultado.sucursal} â€” {reporteResultado.periodo}
                         </p>
                         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                           <TarjetaLambda titulo="Ventas Totales" valor={`$${reporteResultado.datos.ventasTotales.toLocaleString()}`} />
@@ -405,7 +405,7 @@ const eliminarUsuario = async (id) => {
                     {reporteResultado.reportes && (
                       <div>
                         <p style={{ color: "#065f46", marginBottom: "12px" }}>
-                          <strong>Periodo:</strong> {reporteResultado.periodo} — {reporteResultado.total} sucursales
+                          <strong>Periodo:</strong> {reporteResultado.periodo} â€” {reporteResultado.total} sucursales
                         </p>
                         <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
                           {reporteResultado.reportes.map((r, i) => (
@@ -443,7 +443,7 @@ function TarjetaResumen({ titulo, valor, color }) {
   );
 }
 
-// Componente para mostrar cada métrica del resultado Lambda
+// Componente para mostrar cada mÃ©trica del resultado Lambda
 // Se reutiliza para ventas, transacciones, ticket promedio y crecimiento
 function TarjetaLambda({ titulo, valor }) {
   return (

@@ -1,4 +1,4 @@
-// src/pages/Informes.jsx
+﻿// src/pages/Informes.jsx
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import {
@@ -33,10 +33,10 @@ function Informes() {
     setCargando(true);
     try {
       const params = new URLSearchParams();
-      if (anio)       params.append("año", anio);
+      if (anio)       params.append("aÃ±o", anio);
       if (mes_inicio) params.append("mes_inicio", mes_inicio);
       if (mes_fin)    params.append("mes_fin", mes_fin);
-      const url = `http://localhost:3004/api/informes/datos-dashboard?${params.toString()}`;
+      const url = `PLACEHOLDER/api/informes/datos-dashboard?${params.toString()}`;
       const respuesta = await fetch(url);
       const json = await respuesta.json();
       if (json.success) {
@@ -65,9 +65,9 @@ function Informes() {
     </div>
   );
 
-  // Preparar datos para gráficos
+  // Preparar datos para grÃ¡ficos
   const dataVentasMes = (datos.ventas_erp || []).map(v => ({
-    periodo: `${MESES[v.mes]} ${v.año}`,
+    periodo: `${MESES[v.mes]} ${v.aÃ±o}`,
     ventas:  parseFloat(v.total_ventas),
   })).reverse();
 
@@ -82,7 +82,7 @@ function Informes() {
   }));
 
   const dataComprasMes = (datos.compras_erp || []).map(v => ({
-    periodo: `${MESES[v.mes]} ${v.año}`,
+    periodo: `${MESES[v.mes]} ${v.aÃ±o}`,
     compras: parseFloat(v.total_compras),
   })).reverse();
 
@@ -118,14 +118,14 @@ const exportarPDF = async () => {
 
         <h1 style={{ marginBottom: "5px" }}>Informes Cordillera</h1>
         <p style={{ color: "#666", marginBottom: "24px" }}>
-          Datos reales desde MySQL via <strong>informes-service</strong> — Circuit Breaker activo
+          Datos reales desde MySQL via <strong>informes-service</strong> â€” Circuit Breaker activo
         </p>
 
         {/* Panel de filtros */}
         <div style={{ background: "white", borderRadius: "12px", padding: "20px 24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", gap: "16px", alignItems: "flex-end", flexWrap: "wrap" }}>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
-            <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>Año</label>
+            <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>AÃ±o</label>
             <select value={filtroAnio} onChange={(e) => setFiltroAnio(e.target.value)}
               style={{ padding: "8px 12px", borderRadius: "8px", border: "1px solid #ddd", fontSize: "14px", minWidth: "100px" }}>
               <option value="">Todos</option>
@@ -192,10 +192,10 @@ const exportarPDF = async () => {
             color="#48cae4" />
         </div>
 
-        {/* Fila 1: Línea + Torta */}
+        {/* Fila 1: LÃ­nea + Torta */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "20px", flexWrap: "wrap" }}>
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 2, minWidth: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
-            <h3 style={{ marginBottom: "20px", color: "#333" }}>Evolución de Ventas ERP</h3>
+            <h3 style={{ marginBottom: "20px", color: "#333" }}>EvoluciÃ³n de Ventas ERP</h3>
             <ResponsiveContainer width="100%" height={280}>
               <LineChart data={dataVentasMes}>
                 <CartesianGrid strokeDasharray="3 3" />

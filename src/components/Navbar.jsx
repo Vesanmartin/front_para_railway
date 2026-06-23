@@ -1,4 +1,4 @@
-// src/components/Navbar.jsx
+﻿// src/components/Navbar.jsx
 import { useNavigate } from "react-router-dom";
 
 function obtenerRol() {
@@ -36,7 +36,7 @@ function Navbar() {
 
       <div style={{ display: "flex", gap: "20px" }}>
 
-        {/* ADMIN — solo ve Admin en celeste */}
+        {/* ADMIN â€” solo ve Admin en celeste */}
         {rol === "admin" && (
           <button onClick={() => navigate("/admin")}
             style={{ background: "transparent", color: "#48cae4", border: "none", cursor: "pointer", fontSize: "16px", fontWeight: "600" }}>
@@ -44,7 +44,7 @@ function Navbar() {
           </button>
         )}
 
-        {/* SUPERSAYAYIN — ve todos los módulos */}
+        {/* SUPERSAYAYIN â€” ve todos los mÃ³dulos */}
         {rol === "supersayayin" && (
         <>
           <button onClick={() => navigate("/admin")}
@@ -65,11 +65,11 @@ function Navbar() {
           </button>
             <button onClick={() => navigate("/gestion")}
           style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-            Gestión
+            GestiÃ³n
           </button>
           <button onClick={() => navigate("/importacion")}
           style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-            Importación
+            ImportaciÃ³n
           </button>           
           <button onClick={() => navigate("/informes")}
           style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
@@ -78,7 +78,7 @@ function Navbar() {
           </>
           )}
 
-        {/* GERENTE — ve Dashboard, KPI y Chatbot */}
+        {/* GERENTE â€” ve Dashboard, KPI y Chatbot */}
         {rol === "gerente" && (
         <>
           <button onClick={() => navigate("/dashboard")}
@@ -100,16 +100,16 @@ function Navbar() {
            </>
           )}
 
-        {/* OPERADOR — ve Gestión e Importación */}
+        {/* OPERADOR â€” ve GestiÃ³n e ImportaciÃ³n */}
         {rol === "operador" && (
           <>
             <button onClick={() => navigate("/gestion")}
               style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-              Gestión
+              GestiÃ³n
             </button>
             <button onClick={() => navigate("/importacion")}
               style={{ background: "transparent", color: "white", border: "none", cursor: "pointer", fontSize: "16px" }}>
-              Importación
+              ImportaciÃ³n
             </button>
           </>
         )}
@@ -125,12 +125,12 @@ function Navbar() {
     borderRadius: "8px"
   }}
 >
-  🏠 Home
+  ðŸ  Home
 </button>
 
         <button onClick={cerrarSesion}
           style={{ background: "#e74c3c", color: "white", border: "none", cursor: "pointer", fontSize: "16px", padding: "6px 14px", borderRadius: "8px" }}>
-          Cerrar Sesión
+          Cerrar SesiÃ³n
         </button>
 
       </div>

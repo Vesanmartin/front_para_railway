@@ -1,4 +1,4 @@
-// src/pages/Login.jsx
+﻿// src/pages/Login.jsx
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../services/api";
@@ -13,13 +13,13 @@ function Login() {
   const [code, setCode]             = useState("");
   const navigate = useNavigate();
 
-  // PASO 1: LOGIN — valida credenciales y activa 2FA
+  // PASO 1: LOGIN â€” valida credenciales y activa 2FA
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
       const data = await login(email, password);
       if (data.twoFactor) {
-        alert("El código ha sido enviado a su correo");
+        alert("El cÃ³digo ha sido enviado a su correo");
         setShowCodeInput(true);
         return;
       }
@@ -28,11 +28,11 @@ function Login() {
     }
   };
 
-  // PASO 2: VERIFICAR CÓDIGO 2FA
+  // PASO 2: VERIFICAR CÃ“DIGO 2FA
   const verifyCode = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/verify-code",
+        "/api/auth/verify-code",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -47,10 +47,10 @@ function Login() {
         localStorage.setItem("rol", data.rol);
         navigate("/dashboard");
       } else {
-        setError("Código incorrecto");
+        setError("CÃ³digo incorrecto");
       }
     } catch (error) {
-      setError("Error verificando código");
+      setError("Error verificando cÃ³digo");
     }
   };
 
@@ -72,7 +72,7 @@ function Login() {
         />
         <input
           type="password"
-          placeholder="Contraseña"
+          placeholder="ContraseÃ±a"
           className="input"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -89,27 +89,27 @@ function Login() {
   }}
   onClick={() => navigate("/recuperar-password")}
 >
-  ¿Olvidaste tu contraseña?
+  Â¿Olvidaste tu contraseÃ±a?
 </p>
         {showCodeInput && (
           <div>
             <input
               type="text"
-              placeholder="Ingrese código 2FA"
+              placeholder="Ingrese cÃ³digo 2FA"
               className="input"
               maxLength="6"
               value={code}
               onChange={(e) => setCode(e.target.value)}
             />
             <button type="button" className="button" onClick={verifyCode}>
-              Verificar Código
+              Verificar CÃ³digo
             </button>
           </div>
           
         )}
       </form>
       <div className="footer">
-        Grupo Cordillera © 2026 | Cocq-Gallegos-San Martin-Vasquez
+        Grupo Cordillera Â© 2026 | Cocq-Gallegos-San Martin-Vasquez
       </div>
     </div>
   );

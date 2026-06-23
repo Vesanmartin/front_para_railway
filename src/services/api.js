@@ -1,8 +1,8 @@
-// src/services/api.js
-const BFF_URL     = 'http://localhost:3005';
-const GATEWAY_URL = 'http://localhost:3000';
+﻿// src/services/api.js
+const BFF_URL     = import.meta.env.VITE_API_URL || 'PLACEHOLDER';
+const GATEWAY_URL = import.meta.env.VITE_API_URL || '';
 
-// Autenticación — va directo al gateway
+// AutenticaciÃ³n â€” va directo al gateway
 export const login = async (email, password) => {
   const respuesta = await fetch(`${GATEWAY_URL}/api/auth/login`, {
     method: 'POST',

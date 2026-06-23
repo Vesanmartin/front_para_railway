@@ -1,4 +1,4 @@
-import { useState } from "react";
+﻿import { useState } from "react";
 
 function RecuperarPassword() {
   const [email, setEmail] = useState("");
@@ -6,7 +6,7 @@ function RecuperarPassword() {
   const enviarSolicitud = async () => {
     try {
       const response = await fetch(
-        "http://localhost:3000/api/auth/forgot-password",
+        "/api/auth/forgot-password",
         {
           method: "POST",
           headers: {
@@ -42,7 +42,7 @@ return (
         textAlign: "center"
       }}
     >
-      <h2>Recuperar Contraseña</h2>
+      <h2>Recuperar ContraseÃ±a</h2>
 
       <input
         type="email"

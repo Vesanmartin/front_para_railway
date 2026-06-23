@@ -1,4 +1,4 @@
-function KpiCard({ titulo, valor }) {
+﻿function KpiCard({ titulo, valor }) {
   return (
     <div style={{
       background: "white",
