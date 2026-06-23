@@ -1,6 +1,6 @@
 ﻿// src/services/api.js
-const BFF_URL     = import.meta.env.VITE_API_URL || 'PLACEHOLDER';
-const GATEWAY_URL = import.meta.env.VITE_API_URL || '';
+const BFF_URL     = 'https://backparaprobarrailway-production.up.railway.app';
+const GATEWAY_URL = 'https://backparaprobarrailway-production.up.railway.app';
 
 // Autenticación "” va directo al gateway
 export const login = async (email, password) => {
