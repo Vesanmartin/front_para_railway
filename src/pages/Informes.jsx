@@ -27,6 +27,8 @@ function Informes() {
   const [filtroMesInicio, setFiltroMesInicio] = useState("");
   const [filtroMesFin, setFiltroMesFin]       = useState("");
 
+  const token = localStorage.getItem("token");
+
   useEffect(() => {
     cargarDatos("", "", "");
   }, []);
@@ -39,7 +41,9 @@ function Informes() {
       if (mes_inicio) params.append("mes_inicio", mes_inicio);
       if (mes_fin)    params.append("mes_fin", mes_fin);
       const url = `${GATEWAY_URL}/api/informes/datos-dashboard?${params.toString()}`;
-      const respuesta = await fetch(url);
+      const respuesta = await fetch(url, {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
       const json = await respuesta.json();
       if (json.success) {
         setDatos(json.datos);
@@ -117,7 +121,6 @@ function Informes() {
           Datos reales desde MySQL via <strong>informes-service</strong> — Circuit Breaker activo
         </p>
 
-        {/* Filtros */}
         <div style={{ background: "white", borderRadius: "12px", padding: "20px 24px", marginBottom: "24px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)", display: "flex", gap: "16px", alignItems: "flex-end", flexWrap: "wrap" }}>
           <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
             <label style={{ fontSize: "12px", color: "#555", fontWeight: "600" }}>Año</label>
@@ -163,7 +166,6 @@ function Informes() {
           </button>
         </div>
 
-        {/* Tarjetas resumen */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "30px", flexWrap: "wrap" }}>
           <TarjetaResumen titulo="Total Transacciones ERP"
             valor={datos.ventas_erp?.reduce((acc, v) => acc + parseInt(v.cantidad_transacciones), 0).toLocaleString()}
@@ -174,7 +176,6 @@ function Informes() {
           <TarjetaResumen titulo="Sucursales Activas" valor={dataSucursales.length} color="#48cae4" />
         </div>
 
-        {/* Línea + Torta */}
         <div style={{ display: "flex", gap: "20px", marginBottom: "20px", flexWrap: "wrap" }}>
           <div style={{ background: "white", borderRadius: "12px", padding: "24px", flex: 2, minWidth: "400px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
             <h3 style={{ marginBottom: "20px", color: "#333" }}>Evolución de Ventas ERP</h3>
@@ -202,7 +203,6 @@ function Informes() {
           </div>
         </div>
 
-        {/* Ventas vs Compras */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
           <h3 style={{ marginBottom: "20px", color: "#333" }}>Ventas vs Compras por Mes</h3>
           <ResponsiveContainer width="100%" height={280}>
@@ -218,7 +218,6 @@ function Informes() {
           </ResponsiveContainer>
         </div>
 
-        {/* Top productos */}
         <div style={{ background: "white", borderRadius: "12px", padding: "24px", marginBottom: "20px", boxShadow: "0 2px 8px rgba(0,0,0,0.08)" }}>
           <h3 style={{ marginBottom: "20px", color: "#333" }}>Top 5 Productos</h3>
           <ResponsiveContainer width="100%" height={250}>
