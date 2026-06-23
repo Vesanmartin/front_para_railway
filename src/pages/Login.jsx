@@ -15,18 +15,23 @@ function Login() {
 
   // PASO 1: LOGIN "” valida credenciales y activa 2FA
   const handleLogin = async (e) => {
-    e.preventDefault();
-    try {
-      const data = await login(email, password);
-      if (data.twoFactor) {
-        alert("El código ha sido enviado a su correo");
-        setShowCodeInput(true);
-        return;
-      }
-    } catch (error) {
-      setError("Credenciales incorrectas");
+  e.preventDefault();
+  try {
+    const data = await login(email, password);
+    if (data.twoFactor) {
+      alert("El código ha sido enviado a su correo");
+      setShowCodeInput(true);
+      return;
     }
-  };
+    if (data.token) {
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("rol", data.rol);
+      navigate("/dashboard");
+    }
+  } catch (error) {
+    setError("Credenciales incorrectas");
+  }
+};
 
   // PASO 2: VERIFICAR Cí“DIGO 2FA
   const verifyCode = async () => {
